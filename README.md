@@ -1,0 +1,1 @@
+# solcacao-platform
