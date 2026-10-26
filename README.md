@@ -7,7 +7,7 @@ SolCacao is a full-stack, bilingual (Spanish/English) e-commerce web application
 - **Gourmet catalog and cart:** single-origin chocolate bars and truffles with search and multi-criteria filtering (origin, cacao percentage), a persistent slide-out shopping cart, and guest or registered checkout.
 - **B2B wholesale and custom manufacturing:** a wholesale portal for hotels, corporate events and partners, with a 4-step wizard for requesting custom-branded chocolate quotes and uploading design files.
 - **Personalization, contact and notifications:** personalized customer options, a Contact Us page that stores inquiries, and email notifications that are logged in the database.
-- **Shared database:** a Microsoft SQL Server schema of 13 related tables that backs every part of the platform.
+- **Shared database:** a SQL Server schema of 13 related tables that backs every part of the platform.
 
 Course project for **CSE 5335: Web Data Management** (Fall Semester), developed by a team of five students.
 
@@ -64,11 +64,11 @@ Course project for **CSE 5335: Web Data Management** (Fall Semester), developed 
 | Front end | React 18+ (Hooks, Context) |
 | Styling and icons | Tailwind CSS, Lucide React |
 | Back end | Node.js, Express.js |
-| Database | Microsoft SQL Server (relational model with primary and foreign keys) |
+| Database | SQL Server (relational model with primary and foreign keys) |
 | Auth and security | JWT, bcrypt, role-based route guards |
 | Integrations | Nodemailer (SMTP), multer (file uploads) |
 
-> The original blueprint specified MongoDB. The team chose Microsoft SQL Server instead, so all data is modeled as relational tables.
+> The original blueprint specified MongoDB. The team chose SQL Server instead, so all data is modeled as relational tables.
 
 ---
 
@@ -77,7 +77,7 @@ Course project for **CSE 5335: Web Data Management** (Fall Semester), developed 
 The front end and back end are fully decoupled:
 
 ```
-React front end  <--  JSON over HTTP (REST)  -->  Express API  <-->  Microsoft SQL Server
+React front end  <--  JSON over HTTP (REST)  -->  Express API  <-->  SQL Server
                                                       |
                                                       +--> Nodemailer (SMTP)   email notifications
                                                       +--> multer              file uploads
