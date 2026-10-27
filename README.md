@@ -92,7 +92,7 @@ The React client talks to the server only through stateless RESTful JSON APIs. E
 | Student | Name | Subsystem |
 |---|---|---|
 | 1 | Aditi Vishal | Authentication, Security and Databases |
-| 2 | _(add name)_ | Core Layout, Navigation and Localization |
+| 2 | Vinay Datta Ilapuram | Core Layout, Navigation and Localization |
 | 3 | Hector Quinones | Gourmet Catalog, Search and Cart State |
 | 4 | Kshitij Sadanand Karkera | B2B Services and Customization Wizard |
 | 5 | Suhas Surendra Kumar | Personalization, Contact and Notifications |
