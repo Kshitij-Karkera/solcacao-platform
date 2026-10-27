@@ -68,7 +68,7 @@ Course project for **CSE 5335: Web Data Management** (Fall Semester), developed 
 | Auth and security | JWT, bcrypt, role-based route guards |
 | Integrations | Nodemailer (SMTP), multer (file uploads) |
 
-> The original blueprint specified MongoDB. The team chose SQL Server instead, so all data is modeled as relational tables.
+> All data is modeled as relational tables with primary and foreign keys in SQL Server.
 
 ---
 
