@@ -164,13 +164,86 @@ Relationships are enforced with foreign key constraints, and the one-to-one link
 
 ## Getting Started
 
+**Live version:** https://solcacao-web.onrender.com (the first visit after a quiet period can take about a minute to wake up).
+
+The front end currently runs on mock data kept in the browser, so it works without the back end or the database.
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) 22 LTS or newer (this also installs npm)
+- [Git](https://git-scm.com/)
+
+### Run it locally
+
 ```bash
-# Clone the repository
+# 1. Clone the repository
 git clone https://github.com/Kshitij-Karkera/solcacao-platform.git
 cd solcacao-platform
+
+# 2. Install dependencies
+npm install --legacy-peer-deps
+
+# 3. Start the development server
+npm run dev
 ```
 
-Install and run instructions for the front end and back end will be added here as each subsystem is completed.
+The terminal prints the local address, usually `http://localhost:5173`. Open it in a browser; the page reloads automatically when you edit a file. Press `Ctrl + C` to stop the server.
+
+The `--legacy-peer-deps` flag is needed because a few packages declare peer dependency ranges that npm would otherwise reject.
+
+### Build and run the production version
+
+```bash
+npm run build
+node .output/server/index.mjs
+```
+
+The build creates a Node server bundle in the `.output` folder, and the second command starts it. The site is then served at `http://localhost:3000`. The hosted version on Render uses the same two commands, with the environment variable `NITRO_PRESET=node-server` set in its dashboard.
+
+### Available scripts
+
+| Command | What it does |
+|---|---|
+| `npm run dev` | Starts the development server with live reload |
+| `npm run build` | Creates the production build in `.output` |
+| `npm run preview` | Previews the production build locally |
+| `npm run lint` | Checks the code style |
+
+### Project structure
+
+```
+solcacao-platform/
+├── public/               Static files (favicon, robots.txt)
+├── src/
+│   ├── assets/           Product and hero images
+│   ├── components/
+│   │   ├── site/         Header, footer, cart drawer, quote wizard, auth dialog
+│   │   └── ui/           Shared UI building blocks (buttons, dialogs, forms)
+│   ├── lib/              Mock data and state: products, cart, auth, translations (i18n)
+│   ├── routes/           One file per page (home, catalog, wholesale, contact, ...)
+│   └── styles.css        Design tokens and global styles
+├── SolCacao_schema.sql   SQL Server database schema
+├── package.json          Dependencies and scripts
+└── vite.config.ts        Build configuration
+```
+
+### Pages to try
+
+| Address | Page |
+|---|---|
+| `/` | Home with hero slides and the retail and B2B entry points |
+| `/catalog` | Product grid with search, filters and sorting |
+| `/products/<id>` | Product detail page |
+| `/wholesale` | B2B wholesale page with the 4-step quote wizard |
+| `/sampler` | Custom chocolate sampler builder |
+| `/contact` | Contact form with validation |
+| `/account` | Account and sign-in |
+
+Use the **EN / ES** switch in the header to change the language.
+
+### Database
+
+The SQL Server schema is not connected to the front end yet. To create it, follow [Setting Up the Database](#setting-up-the-database).
 
 ---
 
