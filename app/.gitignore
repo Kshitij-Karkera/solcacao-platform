@@ -1,0 +1,11 @@
+@"
+node_modules
+.output
+.wrangler
+.vercel
+.env
+.env.*
+.DS_Store
+"@ | Set-Content .gitignore
+git add .gitignore
+git status
