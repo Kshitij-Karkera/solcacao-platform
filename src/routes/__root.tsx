@@ -17,11 +17,10 @@ import {
   Scripts,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import type { ReactNode } from "react";
 
 // '?url' makes Vite return the stylesheet's URL so it can be linked in <head>
 import appCss from "../styles.css?url";
-import { reportLovableError } from "../lib/lovable-error-reporting";
 // Toast pop-up notifications (e.g. 'Subscribed!')
 import { Toaster } from "@/components/ui/sonner";
 // EN/ES language context (Student 2)
@@ -65,10 +64,6 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
   console.error(error);
   // Router instance, used to re-run the current route's loaders
   const router = useRouter();
-  // Send the error to Lovable's error reporting once, when it appears
-  useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
-  }, [error]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
