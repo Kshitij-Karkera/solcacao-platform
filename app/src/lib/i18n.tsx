@@ -2,7 +2,13 @@
  * Client-side localization. In production the dictionaries are served by the
  * localization API; here they are bundled so the prototype works offline.
  */
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
+} from "react";
 import type { Lang } from "./products";
 
 // English dictionary: the master copy. Its shape defines the Dict type below,
@@ -39,10 +45,12 @@ const en = {
     ],
     channelsEyebrow: "Two ways to taste SolCacao",
     retailTitle: "For your table",
-    retailBody: "Single-origin bars, truffle collections and seasonal releases, shipped fresh.",
+    retailBody:
+      "Single-origin bars, truffle collections and seasonal releases, shipped fresh.",
     retailCta: "Browse the catalog",
     b2bTitle: "For your business",
-    b2bBody: "Corporate gifting, hotel amenities and private-label confections at scale.",
+    b2bBody:
+      "Corporate gifting, hotel amenities and private-label confections at scale.",
     b2bCta: "Request a quote",
     seasonalEyebrow: "Limited release",
     seasonalTitle: "This season's harvest",
@@ -74,7 +82,12 @@ const en = {
     },
     results: (n: number) => `${n} ${n === 1 ? "product" : "products"}`,
     empty: "No chocolates match those filters.",
-    categories: { bars: "Bars", truffles: "Truffles", bonbons: "Bonbons", seasonal: "Seasonal" },
+    categories: {
+      bars: "Bars",
+      truffles: "Truffles",
+      bonbons: "Bonbons",
+      seasonal: "Seasonal",
+    },
     showResults: "Show results",
   },
   // Product detail page
@@ -160,7 +173,11 @@ const en = {
     access: "Access",
     accessD2C: "D2C · Retail shop",
     accessB2B: "B2B · Wholesale & custom orders",
-    accessD2CItems: ["Shop the full catalog", "Build a sampler box", "Track your orders"],
+    accessD2CItems: [
+      "Shop the full catalog",
+      "Build a sampler box",
+      "Track your orders",
+    ],
     accessB2BItems: [
       "Wholesale pricing",
       "Custom molds & luxury packaging",
@@ -197,10 +214,26 @@ const en = {
     steps: ["Cacao profile", "Brand files", "Packaging", "Review & submit"],
     profileTitle: "Choose your cacao profile",
     profiles: [
-      { id: "bold", name: "Bold dark", desc: "80–85% · Colombia · roasted, intense" },
-      { id: "floral", name: "Floral dark", desc: "70% · Ecuador · jasmine, honey" },
-      { id: "fruity", name: "Fruity dark", desc: "72% · Mexico · citrus, spice" },
-      { id: "creamy", name: "Creamy milk", desc: "45% · Ecuador · caramel, nut" },
+      {
+        id: "bold",
+        name: "Bold dark",
+        desc: "80–85% · Colombia · roasted, intense",
+      },
+      {
+        id: "floral",
+        name: "Floral dark",
+        desc: "70% · Ecuador · jasmine, honey",
+      },
+      {
+        id: "fruity",
+        name: "Fruity dark",
+        desc: "72% · Mexico · citrus, spice",
+      },
+      {
+        id: "creamy",
+        name: "Creamy milk",
+        desc: "45% · Ecuador · caramel, nut",
+      },
     ],
     uploadTitle: "Upload your brand vectors or tech pack",
     uploadHint: "PDF, AI, SVG or EPS · up to 20 MB",
@@ -268,7 +301,7 @@ const en = {
     },
     message: "Message",
     send: "Send message",
-    sent: "Message sent! We'll reply within 1 business day.",
+    sent: "Demo message validated. No message was sent.",
     whatsapp: "Chat on WhatsApp",
     whatsappBody: "Prefer to chat? Our team answers on WhatsApp, Mon–Sat.",
     visit: "Visit the atelier",
@@ -277,6 +310,10 @@ const en = {
       name: "Enter your name",
       email: "Enter a valid email",
       message: "Message must be at least 10 characters",
+      category: "Choose a valid topic",
+      nameLong: "Name must be at most 100 characters",
+      emailLong: "Email must be at most 255 characters",
+      messageLong: "Message must be at most 2000 characters",
     },
   },
   // Site footer
@@ -327,10 +364,12 @@ const es: Dict = {
     ],
     channelsEyebrow: "Dos formas de disfrutar SolCacao",
     retailTitle: "Para tu mesa",
-    retailBody: "Barras de origen único, colecciones de trufas y ediciones de temporada, enviadas frescas.",
+    retailBody:
+      "Barras de origen único, colecciones de trufas y ediciones de temporada, enviadas frescas.",
     retailCta: "Ver el catálogo",
     b2bTitle: "Para tu negocio",
-    b2bBody: "Regalos corporativos, amenidades de hotel y confitería de marca propia a gran escala.",
+    b2bBody:
+      "Regalos corporativos, amenidades de hotel y confitería de marca propia a gran escala.",
     b2bCta: "Solicitar cotización",
     seasonalEyebrow: "Edición limitada",
     seasonalTitle: "La cosecha de esta temporada",
@@ -361,7 +400,12 @@ const es: Dict = {
     },
     results: (n: number) => `${n} ${n === 1 ? "producto" : "productos"}`,
     empty: "Ningún chocolate coincide con esos filtros.",
-    categories: { bars: "Barras", truffles: "Trufas", bonbons: "Bombones", seasonal: "Temporada" },
+    categories: {
+      bars: "Barras",
+      truffles: "Trufas",
+      bonbons: "Bombones",
+      seasonal: "Temporada",
+    },
     showResults: "Ver resultados",
   },
   product: {
@@ -443,7 +487,11 @@ const es: Dict = {
     access: "Acceso",
     accessD2C: "D2C · Tienda minorista",
     accessB2B: "B2B · Mayoreo y pedidos personalizados",
-    accessD2CItems: ["Compra todo el catálogo", "Arma una caja de muestras", "Sigue tus pedidos"],
+    accessD2CItems: [
+      "Compra todo el catálogo",
+      "Arma una caja de muestras",
+      "Sigue tus pedidos",
+    ],
     accessB2BItems: [
       "Precios de mayoreo",
       "Moldes personalizados y empaque de lujo",
@@ -476,13 +524,34 @@ const es: Dict = {
     ],
     wizardEyebrow: "Asistente de pedido",
     wizardTitle: "Solicita una cotización de fabricación",
-    steps: ["Perfil de cacao", "Archivos de marca", "Empaque", "Revisar y enviar"],
+    steps: [
+      "Perfil de cacao",
+      "Archivos de marca",
+      "Empaque",
+      "Revisar y enviar",
+    ],
     profileTitle: "Elige tu perfil de cacao",
     profiles: [
-      { id: "bold", name: "Oscuro intenso", desc: "80–85% · Colombia · tostado, intenso" },
-      { id: "floral", name: "Oscuro floral", desc: "70% · Ecuador · jazmín, miel" },
-      { id: "fruity", name: "Oscuro frutal", desc: "72% · México · cítrico, especias" },
-      { id: "creamy", name: "Leche cremoso", desc: "45% · Ecuador · caramelo, nuez" },
+      {
+        id: "bold",
+        name: "Oscuro intenso",
+        desc: "80–85% · Colombia · tostado, intenso",
+      },
+      {
+        id: "floral",
+        name: "Oscuro floral",
+        desc: "70% · Ecuador · jazmín, miel",
+      },
+      {
+        id: "fruity",
+        name: "Oscuro frutal",
+        desc: "72% · México · cítrico, especias",
+      },
+      {
+        id: "creamy",
+        name: "Leche cremoso",
+        desc: "45% · Ecuador · caramelo, nuez",
+      },
     ],
     uploadTitle: "Sube tus vectores de marca o ficha técnica",
     uploadHint: "PDF, AI, SVG o EPS · hasta 20 MB",
@@ -492,7 +561,11 @@ const es: Dict = {
     packagingTitle: "Define tu empaque",
     packagingTypes: [
       { id: "giftbox", name: "Caja de regalo", desc: "Caja rígida, estampado" },
-      { id: "sleeve", name: "Funda de barra", desc: "Envoltura impresa + foil" },
+      {
+        id: "sleeve",
+        name: "Funda de barra",
+        desc: "Envoltura impresa + foil",
+      },
       { id: "pillow", name: "Empaque individual", desc: "Pieza de amenidad" },
       { id: "tin", name: "Lata de recuerdo", desc: "Lata metálica grabada" },
     ],
@@ -548,15 +621,20 @@ const es: Dict = {
     },
     message: "Mensaje",
     send: "Enviar mensaje",
-    sent: "¡Mensaje enviado! Respondemos en 1 día hábil.",
+    sent: "Mensaje de prueba validado. No se envió ningún mensaje.",
     whatsapp: "Chatear por WhatsApp",
-    whatsappBody: "¿Prefieres chatear? Nuestro equipo responde por WhatsApp, lun–sáb.",
+    whatsappBody:
+      "¿Prefieres chatear? Nuestro equipo responde por WhatsApp, lun–sáb.",
     visit: "Visita el taller",
     hours: "Lun–Sáb · 9:00–18:00",
     errors: {
       name: "Ingresa tu nombre",
       email: "Ingresa un correo válido",
       message: "El mensaje debe tener al menos 10 caracteres",
+      category: "Elige un tema válido",
+      nameLong: "El nombre debe tener como máximo 100 caracteres",
+      emailLong: "El correo debe tener como máximo 255 caracteres",
+      messageLong: "El mensaje debe tener como máximo 2000 caracteres",
     },
   },
   footer: {
@@ -572,7 +650,8 @@ const es: Dict = {
 };
 
 // Lookup table: language code -> dictionary
-const DICTS: Record<Lang, Dict> = { en, es };
+// Student 5 needs both languages for sampler names saved in the shared cart.
+export const DICTS: Record<Lang, Dict> = { en, es };
 // localStorage key that remembers the chosen language
 const STORAGE_KEY = "solcacao.lang";
 
