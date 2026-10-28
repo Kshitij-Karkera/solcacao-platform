@@ -1,0 +1,40 @@
+{
+  // Files TypeScript checks
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "vite.config.ts",
+    "vitest.config.ts",
+    "eslint.config.js"
+  ],
+  // Compiler settings; noEmit because Vite does the actual build
+  "compilerOptions": {
+    "target": "ES2022",
+    "jsx": "react-jsx",
+    "module": "ESNext",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["vite/client", "vitest/globals"],
+
+    "moduleResolution": "Bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": false,
+    "noEmit": true,
+
+    "skipLibCheck": true,
+    // Strict type checking, plus the extra safety flags below
+    "strict": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noUncheckedSideEffectImports": true,
+    // '@/x' means 'src/x' in imports
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}
