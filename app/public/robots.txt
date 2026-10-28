@@ -1,0 +1,23 @@
+# robots.txt — crawler access rules for the site
+# Lives in public/robots.txt so it's served at /robots.txt
+
+# Google search crawler: full access
+User-agent: Googlebot
+Allow: /
+
+# Bing search crawler: full access
+User-agent: Bingbot
+Allow: /
+
+# Twitter/X: fetches pages to build link preview cards
+User-agent: Twitterbot
+Allow: /
+
+# Facebook/WhatsApp: fetches pages to build link previews
+User-agent: facebookexternalhit
+Allow: /
+
+# All other crawlers: full access
+User-agent: *
+Allow: /
+

@@ -1,0 +1,264 @@
+/* ==========================================================================
+   styles.css — global styles and design tokens for SolCacao
+   Owner: Student 2 (Core Layout, Navigation & Localization)
+   ========================================================================== */
+
+/* Load Tailwind v4 without automatic file scanning... */
+@import "tailwindcss" source(none);
+/* ...then scan only the src folder for class names */
+@source "../src";
+/* Animation utilities (used by shadcn components) */
+@import "tw-animate-css";
+
+/* "dark:" variant applies when an ancestor has the .dark class */
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * SolCacao design system.
+ * Warm cream paper, deep cocoa ink and a "sol" saffron-gold accent.
+ * All colors are oklch. Register new tokens in @theme inline.
+ */
+
+/* --------------------------------------------------------------------------
+   Theme mapping: exposes CSS variables to Tailwind as utility classes
+   (e.g. --color-primary -> bg-primary, text-primary)
+   -------------------------------------------------------------------------- */
+@theme inline {
+  /* Typography: Fraunces for headings, Manrope for body text */
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+
+  /* Border radius scale, all derived from the base --radius */
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+
+  /* Core surface and text colors */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  /* Interactive / semantic colors */
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  /* Borders, form inputs and focus rings */
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+
+  /* Chart palette */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* Sidebar (shadcn sidebar component) */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Brand extras */
+  --color-cocoa: var(--cocoa);
+  --color-cocoa-foreground: var(--cocoa-foreground);
+  --color-gold: var(--gold);
+  --color-gold-foreground: var(--gold-foreground);
+  --color-sand: var(--sand);
+  --color-whatsapp: var(--whatsapp);
+  --color-whatsapp-foreground: var(--whatsapp-foreground);
+}
+
+/* --------------------------------------------------------------------------
+   Token values (light theme). Change colors here, not in @theme above.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Base corner radius */
+  --radius: 0.5rem;
+
+  /* Page and text: cream paper with cocoa ink */
+  --background: oklch(0.972 0.014 80);
+  --foreground: oklch(0.23 0.03 45);
+  --card: oklch(0.988 0.008 85);
+  --card-foreground: oklch(0.23 0.03 45);
+  --popover: oklch(0.988 0.008 85);
+  --popover-foreground: oklch(0.23 0.03 45);
+
+  /* Primary = deep cocoa buttons; secondary/muted = soft sand tones */
+  --primary: oklch(0.3 0.05 42);
+  --primary-foreground: oklch(0.97 0.015 80);
+  --secondary: oklch(0.92 0.028 75);
+  --secondary-foreground: oklch(0.28 0.045 42);
+  --muted: oklch(0.935 0.02 78);
+  --muted-foreground: oklch(0.48 0.035 50);
+
+  /* Accent = saffron-gold highlight */
+  --accent: oklch(0.76 0.14 70);
+  --accent-foreground: oklch(0.22 0.04 45);
+
+  /* Errors and destructive actions */
+  --destructive: oklch(0.55 0.2 28);
+  --destructive-foreground: oklch(0.97 0.015 80);
+
+  /* Borders, inputs and gold focus ring */
+  --border: oklch(0.86 0.03 72);
+  --input: oklch(0.86 0.03 72);
+  --ring: oklch(0.7 0.13 68);
+
+  /* Chart colors */
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+
+  /* Sidebar mirrors the main page palette */
+  --sidebar: oklch(0.972 0.014 80);
+  --sidebar-foreground: oklch(0.23 0.03 45);
+  --sidebar-primary: oklch(0.3 0.05 42);
+  --sidebar-primary-foreground: oklch(0.97 0.015 80);
+  --sidebar-accent: oklch(0.92 0.028 75);
+  --sidebar-accent-foreground: oklch(0.28 0.045 42);
+  --sidebar-border: oklch(0.86 0.03 72);
+  --sidebar-ring: oklch(0.7 0.13 68);
+
+  /* Brand colors */
+  --cocoa: oklch(0.19 0.025 42);
+  --cocoa-foreground: oklch(0.95 0.02 80);
+  --gold: oklch(0.78 0.14 72);
+  --gold-foreground: oklch(0.2 0.03 45);
+  --sand: oklch(0.9 0.035 75);
+  /* WhatsApp green for the floating chat button */
+  --whatsapp: oklch(0.5 0.13 150);
+  --whatsapp-foreground: oklch(0.99 0 0);
+
+  /* Hero overlay: dark cocoa on the left fading to transparent */
+  --gradient-hero: linear-gradient(
+    90deg,
+    color-mix(in oklab, var(--cocoa) 92%, transparent) 0%,
+    color-mix(in oklab, var(--cocoa) 60%, transparent) 45%,
+    transparent 100%
+  );
+  /* Soft golden "sun" glow in the upper-left */
+  --gradient-sun: radial-gradient(
+    circle at 30% 20%,
+    color-mix(in oklab, var(--gold) 45%, transparent),
+    transparent 60%
+  );
+
+  /* Cocoa-tinted shadows: soft for cards, lift for hover states */
+  --shadow-soft: 0 18px 40px -24px color-mix(in oklab, var(--cocoa) 45%, transparent);
+  --shadow-lift: 0 28px 60px -28px color-mix(in oklab, var(--cocoa) 60%, transparent);
+}
+
+/* --------------------------------------------------------------------------
+   Base element styles
+   -------------------------------------------------------------------------- */
+@layer base {
+  /* Every element uses the theme border color by default */
+  * {
+    border-color: var(--color-border);
+  }
+
+  /* Smooth scrolling for in-page anchor links (e.g. skip link) */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Page background, text color and body font */
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Headings use the serif display font with slightly tighter spacing */
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.015em;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Custom utilities (usable as Tailwind classes)
+   -------------------------------------------------------------------------- */
+
+/* class="font-display": apply the serif display font */
+@utility font-display {
+  font-family: var(--font-display);
+}
+
+/* class="eyebrow": small uppercase label above headings */
+@utility eyebrow {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+/* class="bg-hero-fade": cocoa gradient overlay for hero images */
+@utility bg-hero-fade {
+  background-image: var(--gradient-hero);
+}
+
+/* class="bg-sun-glow": golden radial glow background */
+@utility bg-sun-glow {
+  background-image: var(--gradient-sun);
+}
+
+/* class="shadow-soft": gentle resting shadow */
+@utility shadow-soft {
+  box-shadow: var(--shadow-soft);
+}
+
+/* class="shadow-lift": deeper shadow for hover / raised elements */
+@utility shadow-lift {
+  box-shadow: var(--shadow-lift);
+}
+
+/* --------------------------------------------------------------------------
+   Animations
+   -------------------------------------------------------------------------- */
+
+/* Fade in while rising 16px into place */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* class="animate-rise": entrance animation for sections and cards */
+@utility animate-rise {
+  animation: rise-in 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
