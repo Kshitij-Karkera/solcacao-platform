@@ -8,4 +8,4 @@ node_modules
 .DS_Store
 "@ | Set-Content .gitignore
 git add .gitignore
-git status
+git statuspackage-lock.json
