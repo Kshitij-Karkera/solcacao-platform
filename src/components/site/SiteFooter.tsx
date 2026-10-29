@@ -28,15 +28,31 @@ export function SiteFooter() {
         <div className="md:col-span-2">
           <p className="eyebrow text-gold">{t.footer.shop}</p>
           <ul className="mt-4 space-y-2 text-sm text-cocoa-foreground/80">
-            <li><Link to="/catalog" className="hover:text-gold">{t.nav.shop}</Link></li>
-            <li><Link to="/sampler" className="hover:text-gold">{t.nav.sampler}</Link></li>
+            <li>
+              <Link to="/catalog" className="hover:text-gold">
+                {t.nav.shop}
+              </Link>
+            </li>
+            <li>
+              <Link to="/sampler" className="hover:text-gold">
+                {t.nav.sampler}
+              </Link>
+            </li>
           </ul>
         </div>
         <div className="md:col-span-2">
           <p className="eyebrow text-gold">{t.footer.company}</p>
           <ul className="mt-4 space-y-2 text-sm text-cocoa-foreground/80">
-            <li><Link to="/wholesale" className="hover:text-gold">{t.nav.wholesale}</Link></li>
-            <li><Link to="/contact" className="hover:text-gold">{t.nav.contact}</Link></li>
+            <li>
+              <Link to="/wholesale" className="hover:text-gold">
+                {t.nav.wholesale}
+              </Link>
+            </li>
+            <li>
+              <Link to="/contact" className="hover:text-gold">
+                {t.nav.contact}
+              </Link>
+            </li>
           </ul>
         </div>
         <div className="md:col-span-4">
@@ -55,6 +71,8 @@ export function SiteFooter() {
           >
             <Input
               type="email"
+              required
+              aria-label={t.auth.email}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@email.com"

@@ -13,7 +13,10 @@ export function LanguageToggle({ className }: { className?: string }) {
     <div
       role="group"
       aria-label={t.common.language}
-      className={cn("inline-flex rounded-full border border-border p-0.5 text-xs font-bold", className)}
+      className={cn(
+        "inline-flex rounded-full border border-border p-0.5 text-xs font-bold",
+        className,
+      )}
     >
       {(["en", "es"] as Lang[]).map((l) => (
         <button
@@ -26,7 +29,9 @@ export function LanguageToggle({ className }: { className?: string }) {
           // Active language gets the filled primary style
           className={cn(
             "rounded-full px-2.5 py-1 uppercase transition-colors",
-            lang === l ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground",
+            lang === l
+              ? "bg-primary text-primary-foreground"
+              : "text-muted-foreground hover:text-foreground",
           )}
         >
           {l}

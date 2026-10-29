@@ -29,9 +29,7 @@ const schema = createInquirySchema(DICTS.en.contact.errors);
 describe("Student 5: inquiry validation", () => {
   it("trims valid input and accepts each supported category", () => {
     for (const category of ["retail", "wholesale", "sample", "support"]) {
-      expect(schema.parse({ ...valid, category, name: " Tester " }).name).toBe(
-        "Tester",
-      );
+      expect(schema.parse({ ...valid, category, name: " Tester " }).name).toBe("Tester");
     }
   });
   it("rejects missing/invalid categories and invalid email", () => {
@@ -48,18 +46,10 @@ describe("Student 5: inquiry validation", () => {
         message: "m".repeat(2000),
       }).success,
     ).toBe(true);
-    expect(schema.safeParse({ ...valid, name: "n".repeat(101) }).success).toBe(
-      false,
-    );
-    expect(
-      schema.safeParse({ ...valid, message: "m".repeat(2001) }).success,
-    ).toBe(false);
-    expect(schema.safeParse({ ...valid, message: "m".repeat(9) }).success).toBe(
-      false,
-    );
-    expect(
-      schema.safeParse({ ...valid, message: "m".repeat(10) }).success,
-    ).toBe(true);
+    expect(schema.safeParse({ ...valid, name: "n".repeat(101) }).success).toBe(false);
+    expect(schema.safeParse({ ...valid, message: "m".repeat(2001) }).success).toBe(false);
+    expect(schema.safeParse({ ...valid, message: "m".repeat(9) }).success).toBe(false);
+    expect(schema.safeParse({ ...valid, message: "m".repeat(10) }).success).toBe(true);
   });
   it("uses localized category error messages", () => {
     const result = createInquirySchema(DICTS.es.contact.errors).safeParse({
@@ -67,8 +57,7 @@ describe("Student 5: inquiry validation", () => {
       category: "bad",
     });
     expect(result.success).toBe(false);
-    if (!result.success)
-      expect(result.error.issues[0]?.message).toBe("Elige un tema válido");
+    if (!result.success) expect(result.error.issues[0]?.message).toBe("Elige un tema válido");
   });
   it("announces contact errors accessibly and clears a valid demo submission", () => {
     render(
@@ -78,10 +67,7 @@ describe("Student 5: inquiry validation", () => {
     );
     fireEvent.click(screen.getByText("Send message"));
     expect(screen.getAllByRole("alert")).toHaveLength(3);
-    expect(screen.getByLabelText("Name")).toHaveAttribute(
-      "aria-invalid",
-      "true",
-    );
+    expect(screen.getByLabelText("Name")).toHaveAttribute("aria-invalid", "true");
     fireEvent.change(screen.getByLabelText("Name"), {
       target: { value: valid.name },
     });

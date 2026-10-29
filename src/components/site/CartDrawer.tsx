@@ -102,7 +102,10 @@ export function CartDrawer() {
               <p className="text-xs text-muted-foreground">{t.cart.shipping}</p>
               {!user && (
                 <button
-                  onClick={() => setDialogOpen(true)}
+                  onClick={() => {
+                    setOpen(false);
+                    setDialogOpen(true);
+                  }}
                   className="w-full rounded-md bg-secondary px-3 py-2 text-left text-xs text-secondary-foreground underline-offset-2 hover:underline"
                 >
                   {t.cart.guest}

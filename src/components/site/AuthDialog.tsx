@@ -49,14 +49,16 @@ export function AuthDialog() {
       return;
     }
     setErrors({});
-    const name = form.name || (form.email.split("@")[0] ?? form.email);
+    const data = result.data;
+    const name = data.name.trim() || (data.email.split("@")[0] ?? data.email);
     signIn({
       name,
-      email: form.email,
+      email: data.email.toLowerCase(),
       type,
       role,
-      company: type === "b2b" ? form.company || undefined : undefined,
+      company: type === "b2b" ? data.company.trim() || undefined : undefined,
     });
+    setForm({ name: "", company: "", email: "", password: "" });
     setDialogOpen(false);
     toast.success(t.auth.welcome(name), {
       description: count > 0 ? t.cart.synced : undefined,
@@ -78,13 +80,19 @@ export function AuthDialog() {
           {mode === "signin" ? t.auth.signInTitle : t.auth.registerTitle}
         </DialogTitle>
 
-        <form onSubmit={submit} className="space-y-4">
+        <form onSubmit={submit} className="space-y-4" noValidate>
+          <p className="text-sm text-muted-foreground">{t.auth.demo}</p>
           <div className="space-y-1.5">
             <Label>{t.auth.accountType}</Label>
             <div className="grid grid-cols-2 gap-2">
               {(
                 [
-                  { id: "retail", icon: ShoppingBag, label: t.auth.retail, hint: t.auth.retailHint },
+                  {
+                    id: "retail",
+                    icon: ShoppingBag,
+                    label: t.auth.retail,
+                    hint: t.auth.retailHint,
+                  },
                   { id: "b2b", icon: Briefcase, label: t.auth.b2b, hint: t.auth.b2bHint },
                 ] as const
               ).map((o) => (

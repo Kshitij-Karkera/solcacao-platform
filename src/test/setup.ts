@@ -3,6 +3,13 @@
 // Adds DOM matchers such as expect(el).toBeInTheDocument()
 import "@testing-library/jest-dom/vitest";
 
+// jsdom does not implement the layout observer used by Radix sliders.
+globalThis.ResizeObserver = class {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};
+
 // jsdom does not implement scrollTo or matchMedia, so provide harmless fakes
 Object.defineProperty(window, "scrollTo", {
   writable: true,

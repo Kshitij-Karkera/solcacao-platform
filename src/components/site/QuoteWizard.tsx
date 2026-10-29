@@ -1,6 +1,7 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Check, FileUp, PartyPopper } from "lucide-react";
 import { toast } from "sonner";
+import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -12,6 +13,10 @@ import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
 import { formatPrice } from "@/lib/products";
 import { cn } from "@/lib/utils";
+
+export function isValidQuoteFile(file: File) {
+  return /\.(pdf|ai|svg|eps)$/i.test(file.name) && file.size <= 20 * 1024 * 1024;
+}
 
 const UNIT_PRICE: Record<string, number> = { giftbox: 4.5, sleeve: 2.2, pillow: 0.9, tin: 6 };
 
@@ -42,13 +47,25 @@ export function QuoteWizard() {
     deadline: "",
     notes: "",
   });
+  useEffect(() => {
+    if (user)
+      setContact((c) => ({
+        ...c,
+        company: c.company || user.company || "",
+        name: c.name || user.name,
+        email: c.email || user.email,
+      }));
+  }, [user]);
   const [submitted, setSubmitted] = useState<string | null>(null);
 
   const canContinue =
     (step === 0 && profile) ||
     step === 1 ||
     (step === 2 && packaging) ||
-    (step === 3 && contact.company.trim() && /\S+@\S+\.\S+/.test(contact.email));
+    (step === 3 &&
+      contact.company.trim() &&
+      contact.name.trim() &&
+      z.string().email().safeParse(contact.email.trim()).success);
 
   const next = () => {
     if (!canContinue) {
@@ -60,7 +77,13 @@ export function QuoteWizard() {
     addQuote({
       ref,
       createdAt: new Date().toISOString(),
-      company: contact.company,
+      company: contact.company.trim(),
+      ownerEmail: (user?.email ?? contact.email).trim().toLowerCase(),
+      contactName: contact.name.trim(),
+      contactEmail: contact.email.trim(),
+      deadline: contact.deadline,
+      notes: contact.notes.trim(),
+      finishes,
       profile,
       packaging,
       quantity,
@@ -109,6 +132,8 @@ export function QuoteWizard() {
             <li key={label}>
               <button
                 type="button"
+                aria-label={label}
+                aria-current={active ? "step" : undefined}
                 disabled={i > step}
                 onClick={() => setStep(i)}
                 className={cn(
@@ -173,7 +198,17 @@ export function QuoteWizard() {
               type="file"
               accept=".pdf,.ai,.svg,.eps"
               className="hidden"
-              onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+              onChange={(e) => {
+                const selected = e.target.files?.[0];
+                if (!selected) return;
+                if (!isValidQuoteFile(selected)) {
+                  toast.error(w.invalidFile);
+                  e.target.value = "";
+                  setFile(null);
+                  return;
+                }
+                setFile(selected);
+              }}
             />
             <p className="mt-3 text-sm text-muted-foreground">{w.uploadSkip}</p>
           </StepBody>
@@ -202,6 +237,7 @@ export function QuoteWizard() {
                 </div>
                 <Slider
                   className="mt-4"
+                  aria-label={w.quantity}
                   min={500}
                   max={10000}
                   step={250}

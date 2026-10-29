@@ -2,13 +2,8 @@
  * Client-side localization. In production the dictionaries are served by the
  * localization API; here they are bundled so the prototype works offline.
  */
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  type ReactNode,
-} from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { readStorage, writeStorage } from "./storage";
 import type { Lang } from "./products";
 
 // English dictionary: the master copy. Its shape defines the Dict type below,
@@ -45,12 +40,10 @@ const en = {
     ],
     channelsEyebrow: "Two ways to taste SolCacao",
     retailTitle: "For your table",
-    retailBody:
-      "Single-origin bars, truffle collections and seasonal releases, shipped fresh.",
+    retailBody: "Single-origin bars, truffle collections and seasonal releases, shipped fresh.",
     retailCta: "Browse the catalog",
     b2bTitle: "For your business",
-    b2bBody:
-      "Corporate gifting, hotel amenities and private-label confections at scale.",
+    b2bBody: "Corporate gifting, hotel amenities and private-label confections at scale.",
     b2bCta: "Request a quote",
     seasonalEyebrow: "Limited release",
     seasonalTitle: "This season's harvest",
@@ -112,13 +105,14 @@ const en = {
     subtotal: "Subtotal",
     shipping: "Shipping calculated at checkout.",
     checkout: "Checkout",
-    guest: "Checking out as guest. Sign in to save your cart.",
-    synced: "Cart synced to your account",
+    guest: "Guest demo. Your cart is saved in this browser. Try sign-in.",
+    synced: "Cart kept in this browser",
     remove: "Remove",
     checkoutDone: "Order placed! (prototype — no payment taken)",
   },
   // Sign-in / sign-up dialog
   auth: {
+    demo: "Demo sign-in only. Credentials are not verified; do not use a real password.",
     signInTitle: "Welcome back",
     registerTitle: "Create your account",
     email: "Email",
@@ -173,11 +167,7 @@ const en = {
     access: "Access",
     accessD2C: "D2C · Retail shop",
     accessB2B: "B2B · Wholesale & custom orders",
-    accessD2CItems: [
-      "Shop the full catalog",
-      "Build a sampler box",
-      "Track your orders",
-    ],
+    accessD2CItems: ["Shop the full catalog", "Build a sampler box", "Track your orders"],
     accessB2BItems: [
       "Wholesale pricing",
       "Custom molds & luxury packaging",
@@ -263,9 +253,10 @@ const en = {
     submit: "Submit quote request",
     successTitle: "Quote request received",
     successBody: (ref: string) =>
-      `Reference ${ref}. Our partnerships team will reply within 2 business days.`,
+      `Demo reference ${ref}. Saved in this browser only; no files or request were sent.`,
     newRequest: "Start another request",
     required: "Please complete this step to continue.",
+    invalidFile: "Choose a PDF, AI, SVG or EPS file up to 20 MB.",
     summaryProfile: "Profile",
     summaryFile: "Brand file",
     summaryPackaging: "Packaging",
@@ -323,7 +314,7 @@ const en = {
     company: "Company",
     newsletter: "Join our tasting notes",
     newsletterCta: "Subscribe",
-    subscribed: "Subscribed!",
+    subscribed: "Demo only. No subscription was sent.",
     rights: "Prototype for demonstration purposes.",
   },
   common: { language: "Language", close: "Close" },
@@ -428,12 +419,13 @@ const es: Dict = {
     subtotal: "Subtotal",
     shipping: "El envío se calcula al pagar.",
     checkout: "Pagar",
-    guest: "Comprando como invitado. Inicia sesión para guardar tu carrito.",
-    synced: "Carrito sincronizado con tu cuenta",
+    guest: "Prueba como invitado. Tu carrito se guarda en este navegador. Prueba iniciar sesión.",
+    synced: "Carrito guardado en este navegador",
     remove: "Quitar",
     checkoutDone: "¡Pedido realizado! (prototipo — sin cobro)",
   },
   auth: {
+    demo: "Acceso de demostración. No se verifican credenciales; no uses una contraseña real.",
     signInTitle: "Bienvenido de nuevo",
     registerTitle: "Crea tu cuenta",
     email: "Correo electrónico",
@@ -487,11 +479,7 @@ const es: Dict = {
     access: "Acceso",
     accessD2C: "D2C · Tienda minorista",
     accessB2B: "B2B · Mayoreo y pedidos personalizados",
-    accessD2CItems: [
-      "Compra todo el catálogo",
-      "Arma una caja de muestras",
-      "Sigue tus pedidos",
-    ],
+    accessD2CItems: ["Compra todo el catálogo", "Arma una caja de muestras", "Sigue tus pedidos"],
     accessB2BItems: [
       "Precios de mayoreo",
       "Moldes personalizados y empaque de lujo",
@@ -524,12 +512,7 @@ const es: Dict = {
     ],
     wizardEyebrow: "Asistente de pedido",
     wizardTitle: "Solicita una cotización de fabricación",
-    steps: [
-      "Perfil de cacao",
-      "Archivos de marca",
-      "Empaque",
-      "Revisar y enviar",
-    ],
+    steps: ["Perfil de cacao", "Archivos de marca", "Empaque", "Revisar y enviar"],
     profileTitle: "Elige tu perfil de cacao",
     profiles: [
       {
@@ -585,9 +568,10 @@ const es: Dict = {
     submit: "Enviar solicitud",
     successTitle: "Solicitud recibida",
     successBody: (ref: string) =>
-      `Referencia ${ref}. Nuestro equipo responderá en un máximo de 2 días hábiles.`,
+      `Referencia de prueba ${ref}. Guardada solo en este navegador; no se enviaron archivos ni solicitudes.`,
     newRequest: "Nueva solicitud",
     required: "Completa este paso para continuar.",
+    invalidFile: "Elige un archivo PDF, AI, SVG o EPS de hasta 20 MB.",
     summaryProfile: "Perfil",
     summaryFile: "Archivo de marca",
     summaryPackaging: "Empaque",
@@ -623,8 +607,7 @@ const es: Dict = {
     send: "Enviar mensaje",
     sent: "Mensaje de prueba validado. No se envió ningún mensaje.",
     whatsapp: "Chatear por WhatsApp",
-    whatsappBody:
-      "¿Prefieres chatear? Nuestro equipo responde por WhatsApp, lun–sáb.",
+    whatsappBody: "¿Prefieres chatear? Nuestro equipo responde por WhatsApp, lun–sáb.",
     visit: "Visita el taller",
     hours: "Lun–Sáb · 9:00–18:00",
     errors: {
@@ -643,7 +626,7 @@ const es: Dict = {
     company: "Empresa",
     newsletter: "Recibe nuestras notas de cata",
     newsletterCta: "Suscribirme",
-    subscribed: "¡Suscrito!",
+    subscribed: "Solo demostración. No se envió ninguna suscripción.",
     rights: "Prototipo con fines de demostración.",
   },
   common: { language: "Idioma", close: "Cerrar" },
@@ -672,7 +655,13 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   // Read saved preference after hydration to avoid SSR mismatches.
   useEffect(() => {
-    const saved = window.localStorage.getItem(STORAGE_KEY);
+    let saved: unknown;
+    try {
+      saved = window.localStorage.getItem(STORAGE_KEY);
+    } catch {
+      saved = null;
+    }
+    if (saved !== "en" && saved !== "es") saved = readStorage(STORAGE_KEY);
     if (saved === "en" || saved === "es") setLangState(saved);
   }, []);
 
@@ -684,7 +673,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   // Change language and remember the choice
   const setLang = (l: Lang) => {
     setLangState(l);
-    window.localStorage.setItem(STORAGE_KEY, l);
+    writeStorage(STORAGE_KEY, l);
   };
 
   return (

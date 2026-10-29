@@ -4,6 +4,9 @@
  */
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
+import { z } from "zod";
+import { readStorage, writeStorage } from "./storage";
+
 export type AccountType = "retail" | "b2b";
 
 export interface MockUser {
@@ -16,6 +19,12 @@ export interface MockUser {
 }
 
 export interface QuoteRequest {
+  ownerEmail?: string | undefined;
+  contactName?: string | undefined;
+  contactEmail?: string | undefined;
+  deadline?: string | undefined;
+  notes?: string | undefined;
+  finishes?: number[] | undefined;
   ref: string;
   createdAt: string;
   company: string;
@@ -35,6 +44,29 @@ interface AuthValue {
   addQuote: (q: QuoteRequest) => void;
 }
 
+const userSchema = z.object({
+  name: z.string().min(1),
+  email: z.string().email(),
+  type: z.enum(["retail", "b2b"]),
+  role: z.string().optional(),
+  company: z.string().optional(),
+});
+const quoteSchema = z.object({
+  ref: z.string(),
+  createdAt: z.string(),
+  company: z.string(),
+  profile: z.string(),
+  packaging: z.string(),
+  quantity: z.number().int().positive(),
+  fileName: z.string().optional(),
+  ownerEmail: z.string().email().optional(),
+  contactName: z.string().optional(),
+  contactEmail: z.string().optional(),
+  deadline: z.string().optional(),
+  notes: z.string().optional(),
+  finishes: z.array(z.number()).optional(),
+});
+
 const AuthContext = createContext<AuthValue | null>(null);
 const USER_KEY = "solcacao.user";
 const QUOTES_KEY = "solcacao.quotes";
@@ -45,35 +77,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
-    try {
-      const u = window.localStorage.getItem(USER_KEY);
-      if (u) setUser(JSON.parse(u));
-      const q = window.localStorage.getItem(QUOTES_KEY);
-      if (q) setQuotes(JSON.parse(q));
-    } catch {
-      /* ignore */
-    }
+    const u = userSchema.safeParse(readStorage(USER_KEY));
+    if (u.success) setUser(u.data);
+    const q = z.array(quoteSchema).safeParse(readStorage(QUOTES_KEY));
+    if (q.success) setQuotes(q.data);
   }, []);
 
   const signIn = (u: MockUser) => {
     setUser(u);
-    window.localStorage.setItem(USER_KEY, JSON.stringify(u));
+    writeStorage(USER_KEY, u);
   };
   const signOut = () => {
     setUser(null);
-    window.localStorage.removeItem(USER_KEY);
+    writeStorage(USER_KEY, null);
   };
   const addQuote = (q: QuoteRequest) => {
     setQuotes((prev) => {
       const next = [q, ...prev];
-      window.localStorage.setItem(QUOTES_KEY, JSON.stringify(next));
+      writeStorage(QUOTES_KEY, next);
       return next;
     });
   };
 
   return (
     <AuthContext.Provider
-      value={{ user, signIn, signOut, dialogOpen, setDialogOpen, quotes, addQuote }}
+      value={{
+        user,
+        signIn,
+        signOut,
+        dialogOpen,
+        setDialogOpen,
+        quotes: quotes.filter((q) => user && q.ownerEmail === user.email.toLowerCase()),
+        addQuote,
+      }}
     >
       {children}
     </AuthContext.Provider>

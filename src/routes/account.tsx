@@ -10,7 +10,10 @@ export const Route = createFileRoute("/account")({
   head: () => ({
     meta: [
       { title: "Your Account — SolCacao" },
-      { name: "description", content: "Manage your SolCacao profile, orders and B2B quote requests." },
+      {
+        name: "description",
+        content: "Manage your SolCacao profile, orders and B2B quote requests.",
+      },
       { property: "og:title", content: "Your SolCacao Account" },
       { property: "og:description", content: "Profile, orders and quote requests." },
       { name: "robots", content: "noindex" },
@@ -116,9 +119,14 @@ function Account() {
               ) : (
                 <ul className="mt-4 divide-y divide-border">
                   {quotes.map((q) => (
-                    <li key={q.ref} className="flex flex-wrap items-center justify-between gap-2 py-4">
+                    <li
+                      key={q.ref}
+                      className="flex flex-wrap items-center justify-between gap-2 py-4"
+                    >
                       <div>
-                        <p className="font-semibold">{q.ref} · {q.company}</p>
+                        <p className="font-semibold">
+                          {q.ref} · {q.company}
+                        </p>
                         <p className="text-sm text-muted-foreground">
                           {w.profiles.find((p) => p.id === q.profile)?.name} ·{" "}
                           {w.packagingTypes.find((p) => p.id === q.packaging)?.name} ·{" "}

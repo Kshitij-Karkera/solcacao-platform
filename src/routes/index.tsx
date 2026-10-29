@@ -24,7 +24,8 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "SolCacao — Single-Origin Chocolate" },
       {
         property: "og:description",
-        content: "Organic cacao bars, truffles and custom B2B confections. Available in English & Spanish.",
+        content:
+          "Organic cacao bars, truffles and custom B2B confections. Available in English & Spanish.",
       },
     ],
   }),

@@ -47,7 +47,10 @@ export const PRODUCTS: Product[] = [
       en: "An intense single-origin bar from the slopes of the Sierra Nevada de Santa Marta.",
       es: "Una barra intensa de origen único de las laderas de la Sierra Nevada de Santa Marta.",
     },
-    notes: { en: "Black cherry · roasted coffee · cedar", es: "Cereza negra · café tostado · cedro" },
+    notes: {
+      en: "Black cherry · roasted coffee · cedar",
+      es: "Cereza negra · café tostado · cedro",
+    },
     origin: "Colombia",
     cacaoPct: 85,
     price: 9.5,

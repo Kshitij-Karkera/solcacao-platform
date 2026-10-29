@@ -25,8 +25,7 @@ export const Route = createFileRoute("/sampler")({
       { title: "Build a Custom Chocolate Sampler — SolCacao" },
       {
         name: "description",
-        content:
-          "Fill a 6 or 12 piece keepsake box with your favorite SolCacao chocolates.",
+        content: "Fill a 6 or 12 piece keepsake box with your favorite SolCacao chocolates.",
       },
       { property: "og:title", content: "Build Your SolCacao Sampler" },
       {
@@ -75,9 +74,7 @@ function Sampler() {
     const names = slots.map((id) => PRODUCTS.find((p) => p.id === id)!);
     // Keep both language versions so cart contents can change language later.
     const summary = (l: "en" | "es") =>
-      [names.map((p) => p.name[l]).join(", "), gift && `“${gift}”`]
-        .filter(Boolean)
-        .join(" · ");
+      [names.map((p) => p.name[l]).join(", "), gift && `“${gift}”`].filter(Boolean).join(" · ");
     // ADD routes through Student 3's cart reducer and browser persistence.
     // A unique key keeps separately customized boxes as separate cart lines.
     dispatch({
@@ -104,16 +101,10 @@ function Sampler() {
   return (
     <>
       {/* Localized title and introduction from the shared translation dictionary. */}
-      <PageHeader
-        eyebrow={t.sampler.eyebrow}
-        title={t.sampler.title}
-        body={t.sampler.body}
-      />
+      <PageHeader eyebrow={t.sampler.eyebrow} title={t.sampler.title} body={t.sampler.body} />
       <div className="mx-auto grid max-w-7xl gap-12 px-4 py-12 sm:px-6 lg:grid-cols-[1fr_420px]">
         <div>
-          <p className="eyebrow mb-4 text-muted-foreground">
-            {t.sampler.choose}
-          </p>
+          <p className="eyebrow mb-4 text-muted-foreground">{t.sampler.choose}</p>
           {/* Flavor cards adapt from two to four columns as the viewport grows. */}
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-4">
             {FLAVORS.map((p) => (
@@ -123,20 +114,13 @@ function Sampler() {
                 className="group overflow-hidden rounded-xl border border-border bg-card text-left transition-all hover:-translate-y-0.5 hover:shadow-soft"
               >
                 <div className="relative aspect-square overflow-hidden">
-                  <img
-                    src={p.image}
-                    alt=""
-                    loading="lazy"
-                    className="h-full w-full object-cover"
-                  />
+                  <img src={p.image} alt="" loading="lazy" className="h-full w-full object-cover" />
                   <span className="absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center rounded-full bg-background/95 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
                     <Plus className="h-4 w-4" />
                   </span>
                 </div>
                 <div className="p-3">
-                  <p className="font-display text-sm leading-tight">
-                    {p.name[lang]}
-                  </p>
+                  <p className="font-display text-sm leading-tight">{p.name[lang]}</p>
                   <p className="mt-1 text-xs text-muted-foreground">
                     {p.cacaoPct}% · {p.origin}
                   </p>
@@ -169,12 +153,7 @@ function Sampler() {
               ))}
             </div>
 
-            <div
-              className={cn(
-                "mt-6 grid gap-2",
-                size === 6 ? "grid-cols-3" : "grid-cols-4",
-              )}
-            >
+            <div className={cn("mt-6 grid gap-2", size === 6 ? "grid-cols-3" : "grid-cols-4")}>
               {/* Render every position, including empty slots, to show progress. */}
               {Array.from({ length: size }).map((_, i) => {
                 const p = PRODUCTS.find((x) => x.id === slots[i]);
@@ -192,9 +171,7 @@ function Sampler() {
                         />
                         {/* Remove exactly this position, even if flavors repeat. */}
                         <button
-                          onClick={() =>
-                            setSlots((s) => s.filter((_, j) => j !== i))
-                          }
+                          onClick={() => setSlots((s) => s.filter((_, j) => j !== i))}
                           aria-label={t.cart.remove}
                           className="absolute inset-0 flex items-center justify-center bg-cocoa/70 opacity-0 transition-opacity hover:opacity-100 focus-visible:opacity-100"
                         >
@@ -212,10 +189,7 @@ function Sampler() {
                 {t.sampler.filled(slots.length, size)}
               </span>
               {slots.length > 0 && (
-                <button
-                  onClick={() => setSlots([])}
-                  className="text-gold hover:underline"
-                >
+                <button onClick={() => setSlots([])} className="text-gold hover:underline">
                   {t.sampler.clear}
                 </button>
               )}

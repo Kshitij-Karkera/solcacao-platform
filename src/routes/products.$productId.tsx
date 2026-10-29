@@ -17,7 +17,10 @@ export const Route = createFileRoute("/products/$productId")({
   },
   head: ({ loaderData }) => {
     const p = loaderData?.product;
-    if (!p) return { meta: [{ title: "Chocolate not found — SolCacao" }, { name: "robots", content: "noindex" }] };
+    if (!p)
+      return {
+        meta: [{ title: "Chocolate not found — SolCacao" }, { name: "robots", content: "noindex" }],
+      };
     return {
       meta: [
         { title: `${p.name.en} — SolCacao` },
@@ -116,11 +119,20 @@ function ProductPage() {
 
             <div className="mt-8 flex items-center gap-3">
               <div className="inline-flex h-12 items-center rounded-md border border-border bg-card">
-                <button className="px-3" aria-label="-" onClick={() => setQty((q) => Math.max(1, q - 1))}>
+                <button
+                  className="px-3"
+                  aria-label="-"
+                  onClick={() => setQty((q) => Math.max(1, q - 1))}
+                >
                   <Minus className="h-4 w-4" />
                 </button>
                 <span className="w-8 text-center font-semibold">{qty}</span>
-                <button className="px-3" aria-label="+" onClick={() => setQty((q) => q + 1)}>
+                <button
+                  className="px-3"
+                  aria-label="+"
+                  onClick={() => setQty((q) => Math.min(product.stock, q + 1))}
+                  disabled={qty >= product.stock}
+                >
                   <Plus className="h-4 w-4" />
                 </button>
               </div>

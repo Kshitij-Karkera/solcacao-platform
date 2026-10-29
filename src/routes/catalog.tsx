@@ -36,12 +36,14 @@ export const Route = createFileRoute("/catalog")({
       { title: "Shop Chocolate — SolCacao Catalog" },
       {
         name: "description",
-        content: "Filter single-origin bars, truffles and seasonal chocolates by cacao %, origin and price.",
+        content:
+          "Filter single-origin bars, truffles and seasonal chocolates by cacao %, origin and price.",
       },
       { property: "og:title", content: "Shop Chocolate — SolCacao" },
       {
         property: "og:description",
-        content: "Single-origin bars, truffles and seasonal releases from six Latin American origins.",
+        content:
+          "Single-origin bars, truffles and seasonal releases from six Latin American origins.",
       },
     ],
   }),
@@ -68,7 +70,8 @@ function Catalog() {
     [q, origins, categories, cacaoRange, priceRange, sort],
   );
 
-  const toggle = <T,>(list: T[], v: T) => (list.includes(v) ? list.filter((x) => x !== v) : [...list, v]);
+  const toggle = <T,>(list: T[], v: T) =>
+    list.includes(v) ? list.filter((x) => x !== v) : [...list, v];
 
   const clear = () => {
     setOrigins([]);
@@ -93,6 +96,7 @@ function Catalog() {
       </FilterGroup>
       <FilterGroup title={t.catalog.cacao}>
         <Slider
+          aria-label={t.catalog.cacao}
           min={0}
           max={100}
           step={5}
@@ -107,6 +111,7 @@ function Catalog() {
       </FilterGroup>
       <FilterGroup title={t.catalog.price}>
         <Slider
+          aria-label={t.catalog.price}
           min={0}
           max={PRICE_MAX}
           step={1}
@@ -150,8 +155,11 @@ function Catalog() {
               <SlidersHorizontal /> {t.catalog.filters}
             </Button>
             <Input
+              aria-label={t.nav.search}
               value={q ?? ""}
-              onChange={(e) => navigate({ search: { q: e.target.value || undefined }, replace: true })}
+              onChange={(e) =>
+                navigate({ search: { q: e.target.value || undefined }, replace: true })
+              }
               placeholder={t.nav.searchPlaceholder}
               className="h-10 max-w-xs bg-card"
             />
@@ -163,7 +171,9 @@ function Catalog() {
                 “{q}” <X className="h-3 w-3" />
               </button>
             )}
-            <span className="text-sm text-muted-foreground">{t.catalog.results(results.length)}</span>
+            <span className="text-sm text-muted-foreground">
+              {t.catalog.results(results.length)}
+            </span>
             <div className="ml-auto w-52">
               <Select value={sort} onValueChange={(v) => setSort(v as SortKey)}>
                 <SelectTrigger className="h-10 bg-card" aria-label={t.catalog.sort}>

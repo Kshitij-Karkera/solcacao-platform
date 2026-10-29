@@ -53,7 +53,12 @@ export function SiteHeader() {
       </Link>
     </Button>
   ) : (
-    <Button variant="ghost" size="icon" aria-label={t.nav.signIn} onClick={() => setDialogOpen(true)}>
+    <Button
+      variant="ghost"
+      size="icon"
+      aria-label={t.nav.signIn}
+      onClick={() => setDialogOpen(true)}
+    >
       <User />
     </Button>
   );
@@ -88,7 +93,12 @@ export function SiteHeader() {
         </nav>
         {/* Right-hand actions: search, language, account, cart */}
         <div className="ml-auto flex items-center gap-1">
-          <Button variant="ghost" size="icon" aria-label={t.nav.search} onClick={() => setSearchOpen(true)}>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label={t.nav.search}
+            onClick={() => setSearchOpen(true)}
+          >
             <Search />
           </Button>
           <LanguageToggle className="mx-1 hidden sm:inline-flex" />
@@ -139,6 +149,7 @@ export function SiteHeader() {
           <DialogTitle className="font-display text-2xl">{t.nav.search}</DialogTitle>
           <form onSubmit={submitSearch} className="flex gap-2">
             <Input
+              aria-label={t.nav.search}
               autoFocus
               value={query}
               onChange={(e) => setQuery(e.target.value)}

@@ -208,6 +208,7 @@ The build creates a Node server bundle in the `.output` folder, and the second c
 | `npm run build` | Creates the production build in `.output` |
 | `npm run preview` | Previews the production build locally |
 | `npm run lint` | Checks the code style |
+| `npm test` | Runs the unit tests (Vitest) |
 
 ### Project structure
 
@@ -222,6 +223,8 @@ solcacao-platform/
 │   ├── lib/              Mock data and state: products, cart, auth, translations (i18n)
 │   ├── routes/           One file per page (home, catalog, wholesale, contact, ...)
 │   └── styles.css        Design tokens and global styles
+├── docs/                 Front-end test report, testing guide
+├── tests/                Browser smoke test (see docs/TESTING.md)
 ├── SolCacao_schema.sql   SQL Server database schema
 ├── package.json          Dependencies and scripts
 └── vite.config.ts        Build configuration

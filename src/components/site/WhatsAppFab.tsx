@@ -11,9 +11,7 @@ export function WhatsAppFab() {
   const { t, lang } = useI18n();
   // Choose the greeting from the active site language.
   const msg =
-    lang === "es"
-      ? "¡Hola SolCacao! Tengo una pregunta."
-      : "Hi SolCacao! I have a question.";
+    lang === "es" ? "¡Hola SolCacao! Tengo una pregunta." : "Hi SolCacao! I have a question.";
   return (
     // The landmark and link share a descriptive accessible name.
     <aside aria-label={t.contact.whatsapp}>

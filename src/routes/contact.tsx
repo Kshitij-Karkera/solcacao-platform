@@ -31,8 +31,7 @@ export const Route = createFileRoute("/contact")({
       { title: "Contact SolCacao — Orders, Wholesale & Samples" },
       {
         name: "description",
-        content:
-          "Reach the SolCacao team about retail orders, wholesale, B2B samples or support.",
+        content: "Reach the SolCacao team about retail orders, wholesale, B2B samples or support.",
       },
       { property: "og:title", content: "Contact SolCacao" },
       {
@@ -68,14 +67,10 @@ function Contact() {
     const r = schema.safeParse({ ...form, category: topic });
     // safeParse returns validation issues rather than throwing an exception.
     if (!r.success) {
-      const errs: Partial<
-        Record<"name" | "email" | "message" | "category", string>
-      > = {};
+      const errs: Partial<Record<"name" | "email" | "message" | "category", string>> = {};
       // Map each issue to its field for the inline error display.
       r.error.issues.forEach(
-        (i) =>
-          (errs[i.path[0] as "name" | "email" | "message" | "category"] =
-            i.message),
+        (i) => (errs[i.path[0] as "name" | "email" | "message" | "category"] = i.message),
       );
       setErrors(errs);
       return;
@@ -115,17 +110,11 @@ function Contact() {
                 aria-invalid={Boolean(errors.name)}
                 aria-describedby={errors.name ? "c-name-error" : undefined}
                 value={form.name}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, name: e.target.value }))
-                }
+                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
                 className="h-11 bg-background"
               />
               {errors.name && (
-                <p
-                  id="c-name-error"
-                  role="alert"
-                  className="text-xs text-destructive"
-                >
+                <p id="c-name-error" role="alert" className="text-xs text-destructive">
                   {errors.name}
                 </p>
               )}
@@ -138,17 +127,11 @@ function Contact() {
                 aria-describedby={errors.email ? "c-email-error" : undefined}
                 type="email"
                 value={form.email}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, email: e.target.value }))
-                }
+                onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
                 className="h-11 bg-background"
               />
               {errors.email && (
-                <p
-                  id="c-email-error"
-                  role="alert"
-                  className="text-xs text-destructive"
-                >
+                <p id="c-email-error" role="alert" className="text-xs text-destructive">
                   {errors.email}
                 </p>
               )}
@@ -161,9 +144,7 @@ function Contact() {
               <SelectTrigger
                 id="c-topic"
                 aria-invalid={Boolean(errors.category)}
-                aria-describedby={
-                  errors.category ? "c-category-error" : undefined
-                }
+                aria-describedby={errors.category ? "c-category-error" : undefined}
                 className="h-11 bg-background"
               >
                 <SelectValue />
@@ -177,11 +158,7 @@ function Contact() {
               </SelectContent>
             </Select>
             {errors.category && (
-              <p
-                id="c-category-error"
-                role="alert"
-                className="text-xs text-destructive"
-              >
+              <p id="c-category-error" role="alert" className="text-xs text-destructive">
                 {errors.category}
               </p>
             )}
@@ -195,17 +172,11 @@ function Contact() {
               aria-describedby={errors.message ? "c-message-error" : undefined}
               rows={6}
               value={form.message}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, message: e.target.value }))
-              }
+              onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
               className="bg-background"
             />
             {errors.message && (
-              <p
-                id="c-message-error"
-                role="alert"
-                className="text-xs text-destructive"
-              >
+              <p id="c-message-error" role="alert" className="text-xs text-destructive">
                 {errors.message}
               </p>
             )}
@@ -220,16 +191,10 @@ function Contact() {
           <div className="rounded-2xl bg-cocoa p-8 text-cocoa-foreground">
             <MessageCircle className="h-6 w-6 text-gold" />
             <p className="mt-4 font-display text-2xl">{c.whatsapp}</p>
-            <p className="mt-2 text-sm text-cocoa-foreground/75">
-              {c.whatsappBody}
-            </p>
+            <p className="mt-2 text-sm text-cocoa-foreground/75">{c.whatsappBody}</p>
             <Button variant="whatsapp" className="mt-6 w-full" asChild>
               {/* Opens a prefilled chat; it does not automatically send a message. */}
-              <a
-                href={whatsappLink(waMessage)}
-                target="_blank"
-                rel="noreferrer"
-              >
+              <a href={whatsappLink(waMessage)} target="_blank" rel="noreferrer">
                 {c.whatsapp}
               </a>
             </Button>
