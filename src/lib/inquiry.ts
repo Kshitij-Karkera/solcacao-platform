@@ -1,4 +1,4 @@
-// Student 5: one validation contract for the contact form and its regression tests.
+// One validation contract for the contact form and its regression tests.
 // The backend must validate again before storing an inquiry or sending email.
 import { z } from "zod";
 import type { Dict } from "./i18n";

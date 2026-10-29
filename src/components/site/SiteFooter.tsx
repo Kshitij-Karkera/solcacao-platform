@@ -1,5 +1,4 @@
-// SiteFooter: global footer with brand, links, newsletter form and contact
-// details (Student 2).
+// SiteFooter: global footer with brand, links, newsletter form and contact details.
 
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
@@ -8,7 +7,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useI18n } from "@/lib/i18n";
-// Shared contact constants (owned by another student)
+// Shared contact constants
 import { ATELIER_ADDRESS, CONTACT_EMAIL } from "@/lib/site";
 import { Logo } from "./Logo";
 

@@ -1,4 +1,4 @@
-// router.tsx: creates the TanStack Router instance (owned by Student 2).
+// router.tsx: creates the TanStack Router instance.
 
 import { QueryClient } from "@tanstack/react-query";
 import { createRouter } from "@tanstack/react-router";

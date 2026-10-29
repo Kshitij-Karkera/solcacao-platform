@@ -633,7 +633,7 @@ const es: Dict = {
 };
 
 // Lookup table: language code -> dictionary
-// Student 5 needs both languages for sampler names saved in the shared cart.
+// Both languages are needed for sampler names saved in the shared cart.
 export const DICTS: Record<Lang, Dict> = { en, es };
 // localStorage key that remembers the chosen language
 const STORAGE_KEY = "solcacao.lang";

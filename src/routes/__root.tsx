@@ -1,5 +1,5 @@
 /**
- * __root.tsx: the app shell (owned by Student 2).
+ * __root.tsx: the app shell.
  * Every page renders inside this file. It sets up the <html> document, the
  * <head> tags, global providers (data, language, auth, cart), the skip link,
  * header, footer, and the 404 and error screens.
@@ -23,9 +23,9 @@ import type { ReactNode } from "react";
 import appCss from "../styles.css?url";
 // Toast pop-up notifications (e.g. 'Subscribed!')
 import { Toaster } from "@/components/ui/sonner";
-// EN/ES language context (Student 2)
+// EN/ES language context
 import { I18nProvider, useI18n } from "@/lib/i18n";
-// Providers and components owned by other students (Students 1, 3 and 5)
+// Cart and auth providers
 import { CartProvider } from "@/lib/cart";
 import { AuthProvider } from "@/lib/auth";
 // Site-wide layout pieces

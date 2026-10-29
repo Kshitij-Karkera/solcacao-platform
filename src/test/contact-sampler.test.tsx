@@ -1,4 +1,4 @@
-// Student 5: validate inquiry boundaries and the complete sampler/cart journey.
+// Validate inquiry boundaries and the complete sampler/cart journey.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { createInquirySchema } from "@/lib/inquiry";
@@ -26,7 +26,7 @@ const valid = {
 };
 const schema = createInquirySchema(DICTS.en.contact.errors);
 
-describe("Student 5: inquiry validation", () => {
+describe("Contact: inquiry validation", () => {
   it("trims valid input and accepts each supported category", () => {
     for (const category of ["retail", "wholesale", "sample", "support"]) {
       expect(schema.parse({ ...valid, category, name: " Tester " }).name).toBe("Tester");
@@ -83,7 +83,7 @@ describe("Student 5: inquiry validation", () => {
   });
 });
 
-describe("Student 5: sampler and WhatsApp", () => {
+describe("Sampler and WhatsApp", () => {
   it("limits a full box, truncates twelve to six, and stores both translations", () => {
     render(
       <I18nProvider>
