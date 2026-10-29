@@ -1,5 +1,5 @@
-// WhatsAppFab: floating WhatsApp contact shortcut (Student 5).
-// Mounted once in Student 2's root layout so it appears on every page.
+// WhatsAppFab: floating WhatsApp contact shortcut.
+// Mounted once in the root layout so it appears on every page.
 // Uses a translated greeting and the destination configured in lib/site.ts.
 
 import { MessageCircle } from "lucide-react";

@@ -1,4 +1,4 @@
-// Sampler: custom 6- or 12-piece chocolate box builder (Student 5).
+// Sampler: custom 6- or 12-piece chocolate box builder.
 // Customers choose flavors, optionally add a gift message, and add a full box
 // to the shared cart. Pricing and products are prototype data.
 
@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { PageHeader } from "@/components/site/PageHeader";
-// Student 3 supplies the cart and product catalog; Student 2 supplies localization.
+// Cart, product catalog and localization.
 import { useCart } from "@/lib/cart";
 import { DICTS, useI18n } from "@/lib/i18n";
 import { PRODUCTS, formatPrice } from "@/lib/products";
@@ -75,14 +75,14 @@ function Sampler() {
     // Keep both language versions so cart contents can change language later.
     const summary = (l: "en" | "es") =>
       [names.map((p) => p.name[l]).join(", "), gift && `“${gift}”`].filter(Boolean).join(" · ");
-    // ADD routes through Student 3's cart reducer and browser persistence.
+    // ADD routes through the cart reducer and browser persistence.
     // A unique key keeps separately customized boxes as separate cart lines.
     dispatch({
       type: "ADD",
       item: {
         key: `sampler-${Date.now()}`,
         // Use each dictionary directly, rather than copying the current language twice.
-        // Integration requires Student 2's i18n module to export DICTS.
+        // This relies on the i18n module exporting DICTS.
         name: {
           en: DICTS.en.sampler.name(size),
           es: DICTS.es.sampler.name(size),

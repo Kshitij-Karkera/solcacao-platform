@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { useI18n } from "@/lib/i18n";
-// Cart and auth contexts come from other students
+// Cart and auth contexts
 import { useCart } from "@/lib/cart";
 import { useAuth } from "@/lib/auth";
 import { Logo } from "./Logo";

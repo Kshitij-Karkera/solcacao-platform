@@ -1,4 +1,4 @@
-// Site contact configuration and WhatsApp URL helper (Student 5).
+// Site contact configuration and WhatsApp URL helper.
 // Imported by the contact page, shared footer and floating WhatsApp button.
 // These values are public browser-visible details, never server credentials.
 

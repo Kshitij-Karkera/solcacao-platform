@@ -1,7 +1,6 @@
 /* ==========================================================================
    styles.css — global styles and design tokens for SolCacao
-   Owner: Student 2 (Core Layout, Navigation & Localization)
-   ========================================================================== */
+========================================================================== */
 
 /* Load Tailwind v4 without automatic file scanning... */
 @import "tailwindcss" source(none);

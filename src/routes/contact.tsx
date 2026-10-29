@@ -1,4 +1,4 @@
-// Contact: customer inquiry page (Student 5). Shows a localized form,
+// Contact: customer inquiry page. Shows a localized form,
 // field-level validation, topic-specific WhatsApp links and contact details.
 // This prototype validates locally; sending email requires a backend endpoint.
 
@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { PageHeader } from "@/components/site/PageHeader";
-// Shared localization is owned by Student 2; contact copy lives in t.contact.
+// Contact copy lives in t.contact.
 import { useI18n } from "@/lib/i18n";
 import { ATELIER_ADDRESS, CONTACT_EMAIL, whatsappLink } from "@/lib/site";
 

@@ -1,5 +1,4 @@
-// start.ts: TanStack Start configuration: middleware that runs on every server
-// request (owned by Student 2).
+// start.ts: TanStack Start configuration: middleware that runs on every server request.
 
 import { createStart, createCsrfMiddleware, createMiddleware } from "@tanstack/react-start";
 

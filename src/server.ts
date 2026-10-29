@@ -1,5 +1,5 @@
 // server.ts: custom server entry that wraps TanStack Start's SSR handler
-// (owned by Student 2). Selected in vite.config.ts via server.entry.
+// Selected in vite.config.ts via server.entry.
 
 // Imported first so its console.error hook is installed before anything else runs
 import "./lib/error-capture";

@@ -1,4 +1,4 @@
-// LanguageToggle: EN/ES switch shown in the header and mobile menu (Student 2).
+// LanguageToggle: EN/ES switch shown in the header and mobile menu.
 
 import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
