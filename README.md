@@ -180,14 +180,15 @@ The front end currently runs on mock data kept in the browser, so it works witho
 git clone https://github.com/Kshitij-Karkera/solcacao-platform.git
 cd solcacao-platform
 
-# 2. Install dependencies
+# 2. Move into the front-end folder and install dependencies
+cd frontend
 npm install --legacy-peer-deps
 
 # 3. Start the development server
 npm run dev
 ```
 
-The terminal prints the local address, usually `http://localhost:5173`. Open it in a browser; the page reloads automatically when you edit a file. Press `Ctrl + C` to stop the server.
+Run the `npm` commands from the `frontend/` folder. The terminal prints the local address, usually `http://localhost:5173`. Open it in a browser; the page reloads automatically when you edit a file. Press `Ctrl + C` to stop the server.
 
 The `--legacy-peer-deps` flag is needed because a few packages declare peer dependency ranges that npm would otherwise reject.
 
@@ -198,7 +199,7 @@ npm run build
 node .output/server/index.mjs
 ```
 
-The build creates a Node server bundle in the `.output` folder, and the second command starts it. The site is then served at `http://localhost:3000`. The hosted version on Render uses the same two commands, with the environment variable `NITRO_PRESET=node-server` set in its dashboard.
+The build creates a Node server bundle in the `.output` folder, and the second command starts it. The site is then served at `http://localhost:3000`. The hosted version on Render uses the same two commands, with the **Root Directory** set to `frontend` and the environment variable `NITRO_PRESET=node-server` set in its dashboard.
 
 ### Available scripts
 
@@ -214,20 +215,21 @@ The build creates a Node server bundle in the `.output` folder, and the second c
 
 ```
 solcacao-platform/
-├── public/               Static files (favicon, robots.txt)
-├── src/
-│   ├── assets/           Product and hero images
-│   ├── components/
-│   │   ├── site/         Header, footer, cart drawer, quote wizard, auth dialog
-│   │   └── ui/           Shared UI building blocks (buttons, dialogs, forms)
-│   ├── lib/              Mock data and state: products, cart, auth, translations (i18n)
-│   ├── routes/           One file per page (home, catalog, wholesale, contact, ...)
-│   └── styles.css        Design tokens and global styles
+├── frontend/             React front end (run all npm commands from here)
+│   ├── public/           Static files (favicon, robots.txt)
+│   ├── src/
+│   │   ├── assets/       Product and hero images
+│   │   ├── components/
+│   │   │   ├── site/     Header, footer, cart drawer, quote wizard, auth dialog
+│   │   │   └── ui/       Shared UI building blocks (buttons, dialogs, forms)
+│   │   ├── lib/          Mock data and state: products, cart, auth, translations (i18n)
+│   │   ├── routes/       One file per page (home, catalog, wholesale, contact, ...)
+│   │   └── styles.css    Design tokens and global styles
+│   ├── tests/            Browser smoke tests (see docs/TESTING.md)
+│   ├── package.json      Dependencies and scripts
+│   └── vite.config.ts    Build configuration
 ├── docs/                 Front-end test report, testing guide
-├── tests/                Browser smoke test (see docs/TESTING.md)
-├── SolCacao_schema.sql   SQL Server database schema
-├── package.json          Dependencies and scripts
-└── vite.config.ts        Build configuration
+└── SolCacao_schema.sql   SQL Server database schema
 ```
 
 ### Pages to try
