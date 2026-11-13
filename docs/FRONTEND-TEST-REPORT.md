@@ -48,7 +48,7 @@ This is representative frontend testing of the submitted prototype. It is not a 
 
 ## Evidence and reproducibility
 
-The checks are reproducible from the repository: `npm test`, `npx tsc --noEmit`, `npm run lint` and `npm run build` for the automated checks, and `tests/browser-test.cjs` for the browser journeys. `TESTING.md` explains how to run them. `tests/cross-browser-test.cjs` adds Chromium/Firefox/WebKit, tablet-size and keyboard checks.
+The checks are reproducible from the repository (run from the `frontend/` folder): `npm test`, `npx tsc --noEmit`, `npm run lint` and `npm run build` for the automated checks, and `frontend/tests/browser-test.cjs` for the browser journeys. `TESTING.md` explains how to run them. `frontend/tests/cross-browser-test.cjs` adds Chromium/Firefox/WebKit, tablet-size and keyboard checks.
 
 The final browser checks cover 9 desktop routes, 7 mobile routes, 7 functional journeys, storage-corruption recovery and absence of uncaught exceptions. Invalid product and unknown URLs were checked as handled frontend states, not as a complete HTTP-status/SEO audit. No real WhatsApp message was sent.
 

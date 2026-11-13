@@ -7,9 +7,12 @@ How to run the automated and browser tests for the front end (Students 1–5). T
 Use Node.js 22.12 or newer (tested with Node 24 on Windows).
 
 ```powershell
+cd frontend
 npm install --legacy-peer-deps
 npm run dev -- --host 127.0.0.1 --port 5174
 ```
+
+All commands in this guide run from the `frontend/` folder.
 
 Open http://127.0.0.1:5174. The app uses browser-local mock data. Demo sign-in does not verify credentials. Do not use a real password. Contact, newsletter, quote upload and checkout do not contact a backend or payment provider. WhatsApp destinations are placeholders.
 
@@ -33,7 +36,7 @@ npm install --no-save --package-lock=false playwright
 node tests/browser-test.cjs
 ```
 
-Microsoft Edge must be installed. To select installed Chrome, set `$env:BROWSER_CHANNEL = 'chrome'`. Set `$env:BASE_URL` to test another locally running instance. Results and screenshots are written under `test-results/`, or `$env:TEST_OUTPUT_DIR` if set. Only Edge was exercised for the supplied results.
+Microsoft Edge must be installed. To select installed Chrome, set `$env:BROWSER_CHANNEL = 'chrome'`. Set `$env:BASE_URL` to test another locally running instance. Results and screenshots are written under `frontend/test-results/`, or `$env:TEST_OUTPUT_DIR` if set. Only Edge was exercised for the supplied results.
 
 The checks cover desktop (1440 × 1000) and mobile (390 × 844) routes, navigation, localization persistence, catalog search/sorting, product cart, registration, quote wizard, contact validation, sampler localization, browser storage recovery and uncaught browser exceptions. This is representative frontend coverage, not an exhaustive accessibility, security or cross-browser audit.
 
@@ -47,6 +50,6 @@ npx playwright install chromium firefox webkit
 node tests/cross-browser-test.cjs
 ```
 
-Set `$env:BROWSERS = 'firefox'` to run one browser. A browser that is not installed is reported as SKIPPED, not passed. Results are written to `test-results/cross-browser-results.json`.
+Set `$env:BROWSERS = 'firefox'` to run one browser. A browser that is not installed is reported as SKIPPED, not passed. Results are written to `frontend/test-results/cross-browser-results.json`.
 
 Run so far: Chromium only (35 checks passed, 0 failed). Firefox and WebKit have to be run on a machine where they can be installed. This is keyboard and layout coverage, not a full accessibility audit.
