@@ -140,4 +140,36 @@ router.post(
     }),
 );
 
+router.get(
+    "/quotes",
+    asyncHandler(async (req, res) => {
+        const { rows } = await query(
+            `SELECT TOP 100 q.reference AS ref, q.submitted_at AS createdAt, q.company,
+              q.cacao_profile AS profile, q.packaging, q.quantity, q.finishes,
+              f.file_name AS fileName, q.status
+         FROM B2BQuoteRequests q LEFT JOIN DesignFiles f ON f.quote_id = q.quote_id
+        WHERE q.partner_id = $1 ORDER BY q.submitted_at DESC, q.quote_id DESC`,
+            [req.user.partner_id],
+        );
+        res.json({ quotes: rows.map((r) => ({ ...r, finishes: parseJson(r.finishes, []) })) });
+    }),
+);
+
+router.get(
+    "/quotes/:ref",
+    asyncHandler(async (req, res) => {
+        const { rows } = await query(
+            `SELECT q.reference AS ref, q.submitted_at AS createdAt, q.company, q.contact_name AS contactName,
+              q.contact_email AS contactEmail, q.cacao_profile AS profile, q.packaging, q.quantity,
+              q.finishes, q.needed_by AS deadline, q.branding_notes AS notes,
+              f.file_name AS fileName, q.status
+         FROM B2BQuoteRequests q LEFT JOIN DesignFiles f ON f.quote_id = q.quote_id
+        WHERE q.reference = $1 AND q.partner_id = $2`,
+            [req.params.ref, req.user.partner_id],
+        );
+        if (!rows[0]) throw new HttpError(404, "Quote not found");
+        res.json({ quote: { ...rows[0], finishes: parseJson(rows[0].finishes, []) } });
+    }),
+);
+
 export default router;
