@@ -26,12 +26,13 @@ cp .env.example .env     # then fill in real values
    ```
 4. Create the tables and load starter data:
    ```bash
-   npm run db:migrate   # db/schema.sql (T-SQL, safe to re-run)
-   npm run db:seed      # db/seed.sql (10 products + EN/ES dictionary)
+   npm run db:migrate   # db/schema.sql: the 13 SolCacao tables (T-SQL, only creates what is missing)
+   npm run db:seed      # db/seed.sql: 10 products with stock (safe to re-run)
    ```
-   You can also paste both files into the portal's **Query editor** instead.
+   To rebuild from scratch (**deletes all data**, also removes tables of the earlier 11-table design): `npm run db:reset`, then migrate and seed again.
+   You can also paste the files into the portal's **Query editor** instead.
 
-Notes: lists/objects (quote finishes, cart snapshots, form extras) are stored as JSON text with `ISJSON` checks; text columns are `NVARCHAR` so Spanish accents are kept.
+Notes: lists/objects (quote finishes, cart snapshots, bilingual names and descriptions, form extras) are stored as JSON text with `ISJSON` checks; text columns are `NVARCHAR` so Spanish accents are kept.
 
 ## 3. Run
 
@@ -75,32 +76,34 @@ Auth header for protected routes: `Authorization: Bearer <token>`.
 | POST | `/api/contact` | Public | `{ name, email, category (general\|wholesale\|order\|press\|feedback), message, company?, lang? }` | 201 |
 | POST | `/api/sampler` | Public | `{ name, email, size (6\|12), picks: string[], company?, message? }` | 201 |
 | GET | `/api/whatsapp?lang=es` | Public | – | 200 `{ general, wholesale }` links |
-| GET | `/api/i18n` | Public | – | 200 `{ languages }` |
-| GET | `/api/i18n/:lang` | Public | `en` or `es` | 200 `{ lang, dictionary }` |
 | GET | `/static/images/*` | Public | product images | 200 |
 
 ### Roles & security
-- Roles (`customer`, `partner`, `admin`) are stored in `user_roles`, assigned by the server at registration — the client can never pick its own role. B2B accounts get `partner`.
+- Roles are derived by the server, never sent by the client: every user is a `customer`; a B2B account whose `CorporatePartners.approval_status` is `approved` is also a `partner` (B2B sign-ups are currently auto-approved).
 - Profile role (e.g. `pastry-chef`) is a display label stored on the user.
-- Passwords: bcrypt (12 rounds). Tokens: HS256 JWT, 7-day expiry, roles re-checked from the DB on every request.
+- Passwords: bcrypt (12 rounds). Tokens: HS256 JWT, 7-day expiry, approval re-checked from the DB on every request.
 - Rate limits on login/register and contact forms; Helmet headers; CORS allow-list; parameterised SQL only.
 - Cart prices are always taken from the database, never from the client.
 - Uploads: max 20 MB, PDF/SVG/AI/EPS/PNG/JPG/ZIP, stored with random names (local disk or private Azure Blob container).
 
 ## 6. Database schema
 
-| Table | Purpose |
+The backend uses the 13-table SolCacao schema (`SolCacao_schema.sql` in the repository root). `db/schema.sql` creates the same tables, columns and relationships, plus small implementation additions (marked `-- +`): auto-numbered IDs, defaults, a unique `Users.email`, and the extra columns the API needs (product details, address line 2, quote reference/contact/finishes, inquiry company/payload).
+
+| Table | Used for |
 |---|---|
-| `users` | id, email (unique, case-insensitive), password_hash, name, account_type, profile_role, preferred_lang |
-| `user_roles` | (user_id, role) — access control |
-| `corporate_partners` | B2B company profile per user |
-| `addresses` | shipping/billing addresses per user |
-| `products` | catalog with EN/ES name/description/notes, origin, cacao_pct, price_cents, category |
-| `inventory` | stock per product |
-| `carts` / `cart_items` | one saved cart per user |
-| `b2b_quote_requests` | wizard submissions, file reference, status |
-| `inquiries` | contact / feedback / sampler submissions |
-| `translations` | (lang, key, value) dictionaries |
+| `Users` | accounts: email (unique), password hash, name, account type, profile role, language |
+| `Addresses` | shipping/billing addresses |
+| `CorporatePartners` | B2B company record and approval status (gives the `partner` role) |
+| `Inquiries` | contact, feedback and sampler requests |
+| `Products` | catalog: `sku` (public id), bilingual name/description as JSON, origin, price, cacao %, category |
+| `Inventory` | stock per product (`quantity_on_hand` - `reserved_quantity`) |
+| `Carts` / `CartItems` | one active saved cart per user |
+| `B2BQuoteRequests` / `DesignFiles` | wholesale quote requests and their uploaded brand file |
+| `NotificationLog` | every email sent for an inquiry or quote, with its delivery status |
+| `RetailOrders` / `OrderItems` | created for later (checkout is not built yet) |
+
+Custom sampler boxes are priced from two hidden catalog rows (`sampler-box-6`, `sampler-box-12`, `active = 0`).
 
 Full DDL: `db/schema.sql`.
 
@@ -109,7 +112,7 @@ Full DDL: `db/schema.sql`.
 Runs every endpoint against a real Azure SQL (or SQL Server) database (use a test DB, not production):
 
 ```bash
-npm run db:migrate && npm run db:seed && npm test   # uses the DB_* values in .env
+npm run db:reset && npm run db:migrate && npm run db:seed && npm test   # uses the DB_* values in .env
 ```
 
 ## 8. Connecting the website
@@ -120,3 +123,5 @@ Set the API base URL in the frontend (e.g. `VITE_API_URL=https://api.solcacao.co
 - `src/lib/products.ts` → `GET /api/products`
 - `QuoteWizard` → `POST /api/b2b/quote` with `FormData`
 - Contact & sampler pages → `/api/contact`, `/api/sampler`
+
+The earlier `/api/i18n` endpoint was removed: the 13-table schema has no translations table and the front end ships its own dictionaries.
