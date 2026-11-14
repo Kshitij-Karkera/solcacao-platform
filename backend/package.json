@@ -1,0 +1,34 @@
+{
+  "name": "solcacao-api",
+  "version": "1.0.0",
+  "description": "SolCacao REST API — Node.js + Express + Azure SQL Database",
+  "type": "module",
+  "main": "src/server.js",
+  "engines": { "node": ">=20.10.0" },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "db:reset": "node scripts/run-sql.js db/reset.sql",
+    "db:migrate": "node scripts/run-sql.js db/schema.sql",
+    "db:seed": "node scripts/run-sql.js db/seed.sql",
+    "test": "node --test tests/*.test.js"
+  },
+  "dependencies": {
+    "@azure/storage-blob": "^12.24.0",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "express-rate-limit": "^7.4.1",
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.16",
+    "mssql": "^11.0.1",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "supertest": "^7.0.0"
+  }
+}
