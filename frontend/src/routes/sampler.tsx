@@ -1,6 +1,7 @@
 // Sampler: custom 6- or 12-piece chocolate box builder.
 // Customers choose flavors, optionally add a gift message, and add a full box
-// to the shared cart. Pricing and products are prototype data.
+// to the shared cart. Flavors come from GET /api/products; for signed-in users the
+// server prices the box from its catalog (6 pieces = $16.50, 12 pieces = $33.00).
 
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
@@ -14,7 +15,8 @@ import { PageHeader } from "@/components/site/PageHeader";
 // Cart, product catalog and localization.
 import { useCart } from "@/lib/cart";
 import { DICTS, useI18n } from "@/lib/i18n";
-import { PRODUCTS, formatPrice } from "@/lib/products";
+import { formatPrice } from "@/lib/products";
+import { useProducts } from "@/lib/catalog";
 import { cn } from "@/lib/utils";
 import truffles from "@/assets/p-truffles.jpg";
 
@@ -37,14 +39,15 @@ export const Route = createFileRoute("/sampler")({
   component: Sampler,
 });
 
-// Demo price per piece. A production server must calculate authoritative prices.
+// Price per piece shown in the builder; matches the server's sampler-box prices.
 const PIECE_PRICE = 2.75;
-// Offer up to eight non-seasonal products as the available flavor choices.
-const FLAVORS = PRODUCTS.filter((p) => p.category !== "seasonal").slice(0, 8);
 
 function Sampler() {
   const { t, lang } = useI18n();
   const { dispatch, setOpen } = useCart();
+  const products = useProducts();
+  // Offer up to eight non-seasonal products as the available flavor choices.
+  const FLAVORS = products.filter((p) => p.category !== "seasonal").slice(0, 8);
   // A slot stores a product ID; repeated IDs allow several pieces of one flavor.
   const [size, setSize] = useState<6 | 12>(6);
   const [slots, setSlots] = useState<string[]>([]);
@@ -71,7 +74,9 @@ function Sampler() {
   const addToCart = () => {
     if (slots.length !== size) return;
     // Resolve selected IDs into products for translated flavor descriptions.
-    const names = slots.map((id) => PRODUCTS.find((p) => p.id === id)!);
+    const names = slots
+      .map((id) => products.find((p) => p.id === id))
+      .filter((p): p is (typeof products)[number] => Boolean(p));
     // Keep both language versions so cart contents can change language later.
     const summary = (l: "en" | "es") =>
       [names.map((p) => p.name[l]).join(", "), gift && `“${gift}”`].filter(Boolean).join(" · ");
@@ -90,6 +95,8 @@ function Sampler() {
         detail: { en: summary("en"), es: summary("es") },
         price: size * PIECE_PRICE,
         image: truffles,
+        // The server prices a sampler by its box size.
+        size,
       },
     });
     // Reset the builder after adding and open the cart so the customer can review it.
@@ -156,7 +163,7 @@ function Sampler() {
             <div className={cn("mt-6 grid gap-2", size === 6 ? "grid-cols-3" : "grid-cols-4")}>
               {/* Render every position, including empty slots, to show progress. */}
               {Array.from({ length: size }).map((_, i) => {
-                const p = PRODUCTS.find((x) => x.id === slots[i]);
+                const p = products.find((x) => x.id === slots[i]);
                 return (
                   <div
                     key={i}

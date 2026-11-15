@@ -1,5 +1,7 @@
 /**
- * Mock product catalog. In the real app this comes from GET /api/products.
+ * Product catalog. The live list comes from GET /api/products (see lib/catalog.ts);
+ * PRODUCTS below is the bundled copy used for the first render, server-side rendering
+ * and as a fallback while the API is unreachable.
  */
 import darkBar from "@/assets/p-dark-bar.jpg";
 import milkBar from "@/assets/p-milk-bar.jpg";
@@ -207,8 +209,19 @@ export const PRODUCTS: Product[] = [
   },
 ];
 
+/** The catalog currently in use: the bundled list until the API has answered. */
+let current: Product[] = PRODUCTS;
+
+export function setCurrentProducts(list: Product[]) {
+  current = list;
+}
+
+export function currentProducts() {
+  return current;
+}
+
 export function getProduct(id: string) {
-  return PRODUCTS.find((p) => p.id === id);
+  return current.find((p) => p.id === id) ?? PRODUCTS.find((p) => p.id === id);
 }
 
 export type SortKey = "featured" | "price-asc" | "price-desc" | "cacao-desc";

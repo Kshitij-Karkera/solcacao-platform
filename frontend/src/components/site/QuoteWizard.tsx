@@ -9,8 +9,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
-import { useAuth } from "@/lib/auth";
-import { useI18n } from "@/lib/i18n";
+import { ApiError, api } from "@/lib/api";
+import { isPartner, useAuth } from "@/lib/auth";
+import { DICTS, useI18n } from "@/lib/i18n";
 import { formatPrice } from "@/lib/products";
 import { cn } from "@/lib/utils";
 
@@ -27,11 +28,44 @@ export function estimateQuote(packaging: string, quantity: number, finishes: num
   return [Math.round(total * 0.85), Math.round(total * 1.15)] as const;
 }
 
-/** 4-step B2B custom order wizard. Real app: POST /api/b2b/quote (multipart). */
+/**
+ * Build the multipart body for POST /api/b2b/quote. Finishes are sent by their
+ * English names so stored quotes read the same whatever language was used.
+ */
+export function buildQuoteForm(q: {
+  company: string;
+  contactName: string;
+  contactEmail: string;
+  profile: string;
+  packaging: string;
+  quantity: number;
+  finishes: number[];
+  deadline: string;
+  notes: string;
+  file: File | null;
+}) {
+  const form = new FormData();
+  form.append("company", q.company.trim());
+  form.append("contactName", q.contactName.trim());
+  form.append("contactEmail", q.contactEmail.trim());
+  form.append("profile", q.profile);
+  form.append("packaging", q.packaging);
+  form.append("quantity", String(q.quantity));
+  const names = q.finishes
+    .map((i) => DICTS.en.wholesale.finishes[i])
+    .filter((n): n is string => Boolean(n));
+  if (names.length) form.append("finishes", names.join(","));
+  if (q.deadline) form.append("deadline", q.deadline);
+  if (q.notes.trim()) form.append("notes", q.notes.trim());
+  if (q.file) form.append("brandFile", q.file);
+  return form;
+}
+
+/** 4-step B2B custom order wizard, submitted to POST /api/b2b/quote (multipart). */
 export function QuoteWizard() {
   const { t, lang } = useI18n();
   const w = t.wholesale;
-  const { user, addQuote } = useAuth();
+  const { user, setDialogOpen, refreshQuotes } = useAuth();
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [step, setStep] = useState(0);
@@ -57,6 +91,7 @@ export function QuoteWizard() {
       }));
   }, [user]);
   const [submitted, setSubmitted] = useState<string | null>(null);
+  const [sending, setSending] = useState(false);
 
   const canContinue =
     (step === 0 && profile) ||
@@ -67,29 +102,51 @@ export function QuoteWizard() {
       contact.name.trim() &&
       z.string().email().safeParse(contact.email.trim()).success);
 
-  const next = () => {
+  const next = async () => {
     if (!canContinue) {
       toast.error(w.required);
       return;
     }
     if (step < 3) return setStep(step + 1);
-    const ref = `SC-${Math.random().toString(36).slice(2, 7).toUpperCase()}`;
-    addQuote({
-      ref,
-      createdAt: new Date().toISOString(),
-      company: contact.company.trim(),
-      ownerEmail: (user?.email ?? contact.email).trim().toLowerCase(),
-      contactName: contact.name.trim(),
-      contactEmail: contact.email.trim(),
-      deadline: contact.deadline,
-      notes: contact.notes.trim(),
-      finishes,
-      profile,
-      packaging,
-      quantity,
-      fileName: file?.name,
-    });
-    setSubmitted(ref);
+    if (sending) return;
+    // Only signed-in business partners may submit (the API checks this too).
+    if (!user) {
+      toast.error(w.signInRequired);
+      setDialogOpen(true);
+      return;
+    }
+    if (!isPartner(user)) {
+      toast.error(w.b2bOnly);
+      return;
+    }
+    setSending(true);
+    try {
+      const res = await api<{ ref: string }>("/api/b2b/quote", {
+        body: buildQuoteForm({
+          company: contact.company,
+          contactName: contact.name,
+          contactEmail: contact.email,
+          profile,
+          packaging,
+          quantity,
+          finishes,
+          deadline: contact.deadline,
+          notes: contact.notes,
+          file,
+        }),
+      });
+      setSubmitted(res.ref);
+      void refreshQuotes();
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 401) {
+        toast.error(t.common.sessionExpired);
+        setDialogOpen(true);
+      } else if (err instanceof ApiError && err.status === 403) toast.error(w.b2bOnly);
+      else if (err instanceof ApiError && err.status === 0) toast.error(t.common.offline);
+      else toast.error(w.submitFailed);
+    } finally {
+      setSending(false);
+    }
   };
 
   const reset = () => {
@@ -323,8 +380,13 @@ export function QuoteWizard() {
           <Button variant="ghost" disabled={step === 0} onClick={() => setStep(step - 1)}>
             {w.back}
           </Button>
-          <Button size="lg" variant={step === 3 ? "gold" : "default"} onClick={next}>
-            {step === 3 ? w.submit : w.next}
+          <Button
+            size="lg"
+            variant={step === 3 ? "gold" : "default"}
+            onClick={() => void next()}
+            disabled={sending}
+          >
+            {step === 3 ? (sending ? w.sending : w.submit) : w.next}
           </Button>
         </div>
       </div>

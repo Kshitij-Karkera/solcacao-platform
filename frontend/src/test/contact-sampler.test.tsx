@@ -1,17 +1,18 @@
 // Validate inquiry boundaries and the complete sampler/cart journey.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { createInquirySchema } from "@/lib/inquiry";
 import { DICTS, I18nProvider } from "@/lib/i18n";
 import { CartProvider } from "@/lib/cart";
 import { whatsappLink } from "@/lib/site";
 import { Route as ContactRoute } from "@/routes/contact";
 import { Route as SamplerRoute } from "@/routes/sampler";
+import { mockApi } from "./mock-api";
 
 const Contact = ContactRoute.options.component!;
 const Sampler = SamplerRoute.options.component!;
 vi.mock("sonner", () => ({
-  toast: Object.assign(vi.fn(), { success: vi.fn() }),
+  toast: Object.assign(vi.fn(), { success: vi.fn(), error: vi.fn() }),
 }));
 beforeEach(() => localStorage.clear());
 afterEach(() => {
@@ -42,11 +43,18 @@ describe("Contact: inquiry validation", () => {
     expect(
       schema.safeParse({
         ...valid,
-        name: "n".repeat(100),
+        name: "n".repeat(80),
         message: "m".repeat(2000),
       }).success,
     ).toBe(true);
-    expect(schema.safeParse({ ...valid, name: "n".repeat(101) }).success).toBe(false);
+    expect(schema.safeParse({ ...valid, name: "n".repeat(81) }).success).toBe(false);
+    // "Name <email>" must fit the API's 255-character column.
+    expect(schema.safeParse({ ...valid, email: `${"e".repeat(158)}@example.com` }).success).toBe(
+      true,
+    );
+    expect(schema.safeParse({ ...valid, email: `${"e".repeat(159)}@example.com` }).success).toBe(
+      false,
+    );
     expect(schema.safeParse({ ...valid, message: "m".repeat(2001) }).success).toBe(false);
     expect(schema.safeParse({ ...valid, message: "m".repeat(9) }).success).toBe(false);
     expect(schema.safeParse({ ...valid, message: "m".repeat(10) }).success).toBe(true);
@@ -59,7 +67,8 @@ describe("Contact: inquiry validation", () => {
     expect(result.success).toBe(false);
     if (!result.success) expect(result.error.issues[0]?.message).toBe("Elige un tema válido");
   });
-  it("announces contact errors accessibly and clears a valid demo submission", () => {
+  it("announces contact errors accessibly and clears the form after the API accepts it", async () => {
+    mockApi();
     render(
       <I18nProvider>
         <Contact />
@@ -79,7 +88,20 @@ describe("Contact: inquiry validation", () => {
     });
     fireEvent.click(screen.getByText("Send message"));
     expect(screen.queryAllByRole("alert")).toHaveLength(0);
-    expect(screen.getByLabelText("Message")).toHaveValue("");
+    await waitFor(() => expect(screen.getByLabelText("Message")).toHaveValue(""));
+  });
+  it("keeps the typed message when the server cannot be reached", async () => {
+    render(
+      <I18nProvider>
+        <Contact />
+      </I18nProvider>,
+    );
+    fireEvent.change(screen.getByLabelText("Name"), { target: { value: valid.name } });
+    fireEvent.change(screen.getByLabelText("Email"), { target: { value: valid.email } });
+    fireEvent.change(screen.getByLabelText("Message"), { target: { value: valid.message } });
+    fireEvent.click(screen.getByText("Send message"));
+    await waitFor(() => expect(screen.getByText("Send message")).not.toBeDisabled());
+    expect(screen.getByLabelText("Message")).toHaveValue(valid.message);
   });
 });
 
@@ -110,6 +132,7 @@ describe("Sampler and WhatsApp", () => {
       es: "Surtido personalizado · 6 pzs",
     });
     expect(item.price).toBe(16.5);
+    expect(item.size).toBe(6);
     expect(screen.getByText("0 of 6 filled")).toBeInTheDocument();
   });
   it("encodes special characters without sending a WhatsApp message", () => {

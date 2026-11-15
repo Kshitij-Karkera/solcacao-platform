@@ -1,10 +1,16 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { AuthProvider, useAuth } from "@/lib/auth";
 import { CartProvider, cartReducer, useCart } from "@/lib/cart";
 import { DICTS, I18nProvider, useI18n } from "@/lib/i18n";
 import { AuthDialog } from "@/components/site/AuthDialog";
-import { QuoteWizard, estimateQuote, isValidQuoteFile } from "@/components/site/QuoteWizard";
+import {
+  QuoteWizard,
+  buildQuoteForm,
+  estimateQuote,
+  isValidQuoteFile,
+} from "@/components/site/QuoteWizard";
+import { mockApi } from "./mock-api";
 import { readStorage, writeStorage } from "@/lib/storage";
 import { whatsappLink } from "@/lib/site";
 import { Route as ContactRoute } from "@/routes/contact";
@@ -38,11 +44,7 @@ function Probe() {
     <>
       <button onClick={() => auth.setDialogOpen(true)}>Open auth</button>
       <button onClick={() => i18n.setLang("es")}>Spanish</button>
-      <button
-        onClick={() => auth.signIn({ name: "Buyer", email: "other@example.com", type: "b2b" })}
-      >
-        Other user
-      </button>
+      <button onClick={() => auth.signOut()}>Sign out</button>
       <output data-testid="user">{auth.user?.email ?? "guest"}</output>
       <output data-testid="quotes">{auth.quotes.length}</output>
       <output data-testid="cart">
@@ -53,8 +55,9 @@ function Probe() {
   );
 }
 
-describe("Student 1: demo authentication", () => {
-  it("validates retail/B2B registration and stores normalized values without a password", () => {
+describe("Student 1: authentication through the API", () => {
+  it("validates B2B registration, sends normalized values and keeps only the token", async () => {
+    const { calls } = mockApi();
     render(
       <Providers>
         <Probe />
@@ -69,41 +72,54 @@ describe("Student 1: demo authentication", () => {
     fireEvent.change(screen.getByLabelText("Full name"), { target: { value: " Buyer " } });
     fireEvent.change(screen.getByLabelText("Company name"), { target: { value: " Cocoa Ltd " } });
     fireEvent.change(screen.getByLabelText("Email"), { target: { value: " BUYER@example.com " } });
-    fireEvent.change(screen.getByLabelText("Password"), { target: { value: "demo123" } });
+    fireEvent.change(screen.getByLabelText("Password"), { target: { value: "short" } });
     fireEvent.click(screen.getByRole("button", { name: "Create account" }));
-    expect(JSON.parse(localStorage.getItem("solcacao.user")!)).toEqual({
+    expect(screen.getByText("At least 8 characters")).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("Password"), { target: { value: "secret123" } });
+    fireEvent.click(screen.getByRole("button", { name: "Create account" }));
+    await waitFor(() => expect(screen.getByTestId("user")).toHaveTextContent("buyer@example.com"));
+    const register = calls.find((c) => c.path === "/api/auth/register");
+    expect(register?.body).toMatchObject({
       name: "Buyer",
       company: "Cocoa Ltd",
       email: "buyer@example.com",
+      password: "secret123",
+      accountType: "b2b",
       role: "pastry-chef",
-      type: "b2b",
     });
-    expect(screen.getByTestId("user")).toHaveTextContent("buyer@example.com");
+    // The browser keeps the token and profile, never the password.
+    expect(localStorage.getItem("solcacao.token")).toContain("token-buyer@example.com");
+    expect(localStorage.getItem("solcacao.user")).not.toContain("secret123");
   });
-  it("ignores invalid saved profiles and hides another account's local quotes", () => {
+  it("shows the API's sign-in errors and ignores invalid saved profiles", async () => {
+    mockApi();
     localStorage.setItem("solcacao.user", JSON.stringify({ type: "admin" }));
-    localStorage.setItem(
-      "solcacao.quotes",
-      JSON.stringify([
-        {
-          ref: "SC-1",
-          createdAt: "today",
-          company: "A",
-          profile: "bold",
-          packaging: "tin",
-          quantity: 500,
-          ownerEmail: "buyer@example.com",
-        },
-      ]),
-    );
     render(
       <Providers>
         <Probe />
+        <AuthDialog />
       </Providers>,
     );
     expect(screen.getByTestId("user")).toHaveTextContent("guest");
-    fireEvent.click(screen.getByText("Other user"));
-    expect(screen.getByTestId("quotes")).toHaveTextContent("0");
+    fireEvent.click(screen.getByText("Open auth"));
+    fireEvent.change(screen.getByLabelText("Email"), { target: { value: "nobody@example.com" } });
+    fireEvent.change(screen.getByLabelText("Password"), { target: { value: "wrongpass" } });
+    fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
+    expect(await screen.findByText("Email or password is incorrect")).toBeInTheDocument();
+    expect(screen.getByTestId("user")).toHaveTextContent("guest");
+  });
+  it("tells the user when the server cannot be reached", async () => {
+    render(
+      <Providers>
+        <Probe />
+        <AuthDialog />
+      </Providers>,
+    );
+    fireEvent.click(screen.getByText("Open auth"));
+    fireEvent.change(screen.getByLabelText("Email"), { target: { value: "a@example.com" } });
+    fireEvent.change(screen.getByLabelText("Password"), { target: { value: "whatever1" } });
+    fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
+    expect(await screen.findByText(/couldn't reach the SolCacao server/)).toBeInTheDocument();
   });
 });
 
@@ -188,6 +204,36 @@ describe("Student 3: cart", () => {
   });
 });
 
+describe("Student 3: cart sync with the API", () => {
+  it("merges a guest cart into the account on sign-in and saves later changes", async () => {
+    const { calls, seedUser } = mockApi();
+    seedUser({ name: "Ana", email: "ana@example.com", type: "retail" });
+    localStorage.setItem("solcacao.token", JSON.stringify("token-ana@example.com"));
+    localStorage.setItem(
+      "solcacao.user",
+      JSON.stringify({ name: "Ana", email: "ana@example.com", type: "retail" }),
+    );
+    localStorage.setItem(
+      "solcacao.cart",
+      JSON.stringify([{ ...item, key: "sierra-nevada-85", price: 1, qty: 2 }]),
+    );
+    render(
+      <Providers>
+        <Probe />
+      </Providers>,
+    );
+    // The guest cart is merged, then shown with the server's price (9.5, not 1).
+    await waitFor(() => expect(screen.getByTestId("cart")).toHaveTextContent("2:19"));
+    const merge = calls.find((c) => c.path === "/api/cart/merge");
+    expect(merge?.auth).toBe("Bearer token-ana@example.com");
+    expect(merge?.body).toMatchObject({ items: [{ key: "sierra-nevada-85", qty: 2 }] });
+    expect(JSON.parse(localStorage.getItem("solcacao.cart.owner")!)).toBe("ana@example.com");
+    // Signing out forgets the account's cart in this browser.
+    fireEvent.click(screen.getByText("Sign out"));
+    await waitFor(() => expect(screen.getByTestId("cart")).toHaveTextContent("0:0"));
+  });
+});
+
 describe("Student 4: quote wizard", () => {
   it("rejects unsupported/oversized files and accepts the stated boundary", () => {
     expect(isValidQuoteFile(new File(["x"], "logo.exe"))).toBe(false);
@@ -196,9 +242,32 @@ describe("Student 4: quote wizard", () => {
     expect(isValidQuoteFile({ name: "logo.pdf", size: 20 * 1024 * 1024 + 1 } as File)).toBe(false);
     expect(estimateQuote("giftbox", 1000, 2)).toEqual([4335, 5865]);
   });
-  it("requires profile, packaging and a contact name before local submission", () => {
+  it("sends finishes by English name and includes the brand file", () => {
+    const file = new File(["%PDF"], "logo.pdf", { type: "application/pdf" });
+    const form = buildQuoteForm({
+      company: " Cocoa Ltd ",
+      contactName: "Buyer",
+      contactEmail: "buyer@example.com",
+      profile: "bold",
+      packaging: "giftbox",
+      quantity: 1000,
+      finishes: [0, 2],
+      deadline: "",
+      notes: "",
+      file,
+    });
+    expect(form.get("company")).toBe("Cocoa Ltd");
+    expect(form.get("finishes")).toBe("Gold foil,Ribbon");
+    expect(form.get("quantity")).toBe("1000");
+    expect(form.get("deadline")).toBeNull();
+    expect((form.get("brandFile") as File).name).toBe("logo.pdf");
+  });
+  it("requires each step, then a partner sign-in, and shows the API's reference", async () => {
+    const { calls } = mockApi();
     render(
       <Providers>
+        <Probe />
+        <AuthDialog />
         <QuoteWizard />
       </Providers>,
     );
@@ -218,19 +287,38 @@ describe("Student 4: quote wizard", () => {
     fireEvent.click(screen.getByText("Submit quote request"));
     expect(screen.queryByText("Quote request received")).not.toBeInTheDocument();
     fireEvent.change(screen.getByLabelText("Contact name"), { target: { value: "Buyer" } });
+    // Signed out: nothing is sent and the sign-in dialog opens.
     fireEvent.click(screen.getByText("Submit quote request"));
-    expect(screen.getByText("Quote request received")).toBeInTheDocument();
-    expect(JSON.parse(localStorage.getItem("solcacao.quotes")!)[0]).toMatchObject({
+    expect(calls.some((c) => c.path === "/api/b2b/quote")).toBe(false);
+    expect(await screen.findByText("Welcome back")).toBeInTheDocument();
+    fireEvent.click(screen.getByText("New here? Create an account"));
+    fireEvent.click(screen.getByText("Business partner"));
+    fireEvent.change(screen.getByLabelText("Full name"), { target: { value: "Buyer" } });
+    fireEvent.change(screen.getByLabelText("Company name"), { target: { value: "Cocoa Ltd" } });
+    fireEvent.change(screen.getAllByLabelText("Email")[0]!, {
+      target: { value: "buyer@example.com" },
+    });
+    fireEvent.change(screen.getByLabelText("Password"), { target: { value: "secret123" } });
+    fireEvent.click(screen.getByRole("button", { name: "Create account" }));
+    await waitFor(() => expect(screen.getByTestId("user")).toHaveTextContent("buyer@example.com"));
+    fireEvent.click(screen.getByText("Submit quote request"));
+    expect(await screen.findByText("Quote request received")).toBeInTheDocument();
+    expect(screen.getByText(/Your reference is SC-ABC123/)).toBeInTheDocument();
+    const quote = calls.find((c) => c.path === "/api/b2b/quote");
+    expect(quote?.auth).toBe("Bearer token-buyer@example.com");
+    expect(quote?.body).toMatchObject({
       contactName: "Buyer",
       contactEmail: "buyer@example.com",
-      ownerEmail: "buyer@example.com",
-      quantity: 1000,
+      profile: "bold",
+      packaging: "giftbox",
+      quantity: "1000",
     });
   });
 });
 
 describe("Student 5: notification bridge", () => {
-  it("validates contact fields and clears only a valid demo message", () => {
+  it("validates contact fields, sends a valid message and then clears it", async () => {
+    const { calls } = mockApi();
     render(
       <Providers>
         <Contact />
@@ -246,8 +334,14 @@ describe("Student 5: notification bridge", () => {
       target: { value: "Please share your wholesale catalog." },
     });
     fireEvent.click(screen.getByText("Send message"));
-    expect(screen.getByLabelText("Message")).toHaveValue("");
+    await waitFor(() => expect(screen.getByLabelText("Message")).toHaveValue(""));
     expect(screen.queryByText("Enter your name")).not.toBeInTheDocument();
+    expect(calls.find((c) => c.path === "/api/contact")?.body).toMatchObject({
+      name: "Tester",
+      email: "tester@example.com",
+      category: "order",
+      message: "Please share your wholesale catalog.",
+    });
   });
   it("requires a full sampler, caps its size, and stores both cart translations", () => {
     render(

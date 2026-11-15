@@ -5,7 +5,8 @@ import { ArrowRight, Briefcase, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/site/ProductCard";
 import { useI18n } from "@/lib/i18n";
-import { ORIGINS, PRODUCTS } from "@/lib/products";
+import { ORIGINS } from "@/lib/products";
+import { useProducts } from "@/lib/catalog";
 import { cn } from "@/lib/utils";
 import heroCacao from "@/assets/hero-cacao.jpg";
 import heroTruffles from "@/assets/hero-truffles.jpg";
@@ -44,7 +45,8 @@ function Home() {
   }, []);
 
   const current = t.home.slides[slide] ?? t.home.slides[0]!;
-  const seasonal = PRODUCTS.filter((p) => p.seasonal || p.category === "bonbons").slice(0, 3);
+  const products = useProducts();
+  const seasonal = products.filter((p) => p.seasonal || p.category === "bonbons").slice(0, 3);
 
   return (
     <>

@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/site/ProductCard";
 import { useCart } from "@/lib/cart";
 import { useI18n } from "@/lib/i18n";
-import { PRODUCTS, formatPrice, getProduct } from "@/lib/products";
+import { useProducts } from "@/lib/catalog";
+import { formatPrice, getProduct } from "@/lib/products";
 
 export const Route = createFileRoute("/products/$productId")({
   loader: ({ params }) => {
@@ -47,14 +48,20 @@ function ProductNotFound() {
 }
 
 function ProductPage() {
-  const { product } = Route.useLoaderData();
+  const { product: loaded } = Route.useLoaderData();
+  // Prefer the live API copy (current price and stock) once it has loaded.
+  const products = useProducts();
+  const product = products.find((p) => p.id === loaded.id) ?? loaded;
   const { t, lang } = useI18n();
   const { dispatch, setOpen } = useCart();
   const [qty, setQty] = useState(1);
 
-  const related = PRODUCTS.filter(
-    (p) => p.id !== product.id && (p.category === product.category || p.origin === product.origin),
-  ).slice(0, 3);
+  const related = products
+    .filter(
+      (p) =>
+        p.id !== product.id && (p.category === product.category || p.origin === product.origin),
+    )
+    .slice(0, 3);
 
   const add = () => {
     dispatch({

@@ -31,7 +31,14 @@ app.use(express.json({ limit: "200kb" }));
 app.use(morgan(env.isProd ? "combined" : "dev"));
 
 // Static product images (Student 2 asset routing). Put files in backend/public/images.
-app.use("/static", express.static(path.resolve("public"), { maxAge: "7d", immutable: true }));
+app.use(
+  "/static",
+  express.static(path.resolve("public"), {
+    maxAge: "7d",
+    immutable: true,
+    setHeaders: (res) => res.setHeader("Cross-Origin-Resource-Policy", "cross-origin"),
+  }),
+);
 
 app.get("/api/health", async (_req, res) => {
   try {
