@@ -5,15 +5,15 @@ import "@testing-library/jest-dom/vitest";
 
 // jsdom does not implement the layout observer used by Radix sliders.
 globalThis.ResizeObserver = class {
-  observe() { }
-  unobserve() { }
-  disconnect() { }
+  observe() {}
+  unobserve() {}
+  disconnect() {}
 };
 
 // jsdom does not implement scrollTo or matchMedia, so provide harmless fakes
 Object.defineProperty(window, "scrollTo", {
   writable: true,
-  value: () => { },
+  value: () => {},
 });
 
 Object.defineProperty(window, "matchMedia", {
@@ -22,11 +22,11 @@ Object.defineProperty(window, "matchMedia", {
     matches: false,
     media: query,
     onchange: null,
-    addListener: () => { },
-    removeListener: () => { },
-    addEventListener: () => { },
-    removeEventListener: () => { },
-    dispatchEvent: () => { },
+    addListener: () => {},
+    removeListener: () => {},
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    dispatchEvent: () => {},
   }),
 });
 
