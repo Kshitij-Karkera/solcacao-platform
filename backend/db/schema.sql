@@ -203,3 +203,23 @@ CREATE TABLE dbo.NotificationLog (
     FOREIGN KEY (b2b_quote_request_id) REFERENCES B2BQuoteRequests(quote_id)
 );
 GO
+
+-- Trigger: protects stock levels. Rejects any insert or update that would leave
+-- negative stock, or more units reserved than are on hand (prevents overselling).
+CREATE OR ALTER TRIGGER dbo.trg_Inventory_PreventOversell
+ON dbo.Inventory
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    IF EXISTS (
+        SELECT 1 FROM inserted
+        WHERE quantity_on_hand < 0
+           OR reserved_quantity < 0
+           OR reserved_quantity > quantity_on_hand
+    )
+    BEGIN
+        THROW 50001, 'Inventory rule broken: stock cannot be negative or over-reserved.', 1;
+    END
+END
+GO

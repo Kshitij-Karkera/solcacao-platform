@@ -219,3 +219,18 @@ test("contact form validates and stores", async () => {
   });
   assert.equal(ok.status, 201);
 });
+
+test("DB trigger blocks reserving more stock than is on hand", async () => {
+  // Pick any product's inventory row and try to reserve 1 more unit than exists.
+  const { rows } = await pool.query(
+    "SELECT TOP 1 inventory_id, quantity_on_hand FROM Inventory ORDER BY inventory_id",
+  );
+  assert.ok(rows[0], "seed data should include inventory rows");
+  await assert.rejects(
+    pool.query("UPDATE Inventory SET reserved_quantity = $1 WHERE inventory_id = $2", [
+      rows[0].quantity_on_hand + 1,
+      rows[0].inventory_id,
+    ]),
+    /Inventory rule broken/,
+  );
+});
