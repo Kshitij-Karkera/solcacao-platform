@@ -1,0 +1,118 @@
+# Continuous integration for SolCacao.
+# Runs on every push and pull request: the front end is tested, type-checked,
+# linted and built; the API is tested against a real SQL Server in a container.
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+# A newer push to the same branch cancels the older, still-running check.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  frontend:
+    name: Front end (tests, types, lint, build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps --no-audit --no-fund
+
+      - name: Unit and component tests
+        run: npm test
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Production build
+        run: npm run build
+        env:
+          NITRO_PRESET: node-server
+
+  backend:
+    name: API (tests against SQL Server)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    # A throwaway SQL Server for the tests; it disappears when the job ends.
+    services:
+      mssql:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: "Y"
+          MSSQL_SA_PASSWORD: "Ci_Test_Pass_123!"
+        ports:
+          - 1433:1433
+
+    # Test-only settings. No real secrets: the database exists only inside this job.
+    env:
+      NODE_ENV: test
+      DB_SERVER: localhost
+      DB_NAME: solcacao_ci
+      DB_USER: sa
+      DB_PASSWORD: "Ci_Test_Pass_123!"
+      DB_ENCRYPT: "false"
+      DB_TRUST_CERT: "true"
+      JWT_SECRET: ci-only-jwt-secret-not-used-anywhere-else-123456
+      BCRYPT_ROUNDS: "10"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Wait for SQL Server and create the test database
+        env:
+          DB_NAME: master
+        run: |
+          node -e "
+          import('./src/config/db.js').then(async (db) => {
+            for (let i = 1; i <= 30; i++) {
+              try {
+                await db.query('SELECT 1 AS ok');
+                await db.query(\"IF DB_ID('solcacao_ci') IS NULL CREATE DATABASE solcacao_ci\");
+                console.log('SQL Server ready; database solcacao_ci exists');
+                process.exit(0);
+              } catch (err) {
+                console.log('Waiting for SQL Server (' + i + '/30): ' + err.message);
+                await new Promise((r) => setTimeout(r, 3000));
+              }
+            }
+            process.exit(1);
+          });
+          "
+
+      - name: Create tables and seed data
+        run: |
+          npm run db:migrate
+          npm run db:seed
+
+      - name: API tests
+        run: npm test
