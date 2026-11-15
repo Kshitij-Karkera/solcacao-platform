@@ -1,5 +1,7 @@
 # SolCacao Artisanal Chocolate Platform
 
+[![CI](https://github.com/Kshitij-Karkera/solcacao-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/Kshitij-Karkera/solcacao-platform/actions/workflows/ci.yml)
+
 SolCacao is a full-stack, bilingual (English/Spanish) e-commerce web application for a premium single-origin cacao brand. One codebase covers the whole customer journey:
 
 - **Accounts and security:** registration and sign-in for retail customers and B2B partners, with hashed passwords, JWT sessions and role-based access.
@@ -18,6 +20,8 @@ Course project for **CSE 5335: Web Data Management** (Fall 2026), built by a tea
 | Database | Azure SQL Database `SolCacao` | [`backend/db/schema.sql`](backend/db/schema.sql) |
 
 The live services run on free plans and sleep when idle: the first request after a quiet period can take about a minute.
+
+**Using the site:** see the [User Guide](docs/USER-GUIDE.md) for shoppers and business partners.
 
 ---
 
@@ -154,7 +158,8 @@ Use the **EN / ES** switch in the header to change the language.
 solcacao-platform/
 ├── frontend/             React website            → frontend/README.md
 ├── backend/              Express API and database → backend/README.md
-├── docs/                 Testing guide and front-end test report
+├── .github/workflows/    CI: tests, type check, lint and build on every push and pull request
+├── docs/                 User guide, testing guide and front-end test report
 ├── SolCacao_schema.sql   Original database design (13 tables)
 └── roadmap.md            Project roadmap
 ```
