@@ -166,7 +166,7 @@ Relationships are enforced with foreign key constraints, and the one-to-one link
 
 **Live version:** https://solcacao-web.onrender.com (the first visit after a quiet period can take about a minute to wake up).
 
-The front end currently runs on mock data kept in the browser, so it works without the back end or the database.
+The front end calls the API (`backend/`) with `fetch()`: sign-in, catalog, cart, B2B quotes and the contact form all use it. In development it expects the API at `http://localhost:4000` (see `backend/README.md`); production builds use `https://solcacao-api.onrender.com`. Set `VITE_API_URL` to point it elsewhere. If the API cannot be reached, the catalog falls back to its bundled product list.
 
 ### Prerequisites
 
@@ -222,7 +222,7 @@ solcacao-platform/
 │   │   ├── components/
 │   │   │   ├── site/     Header, footer, cart drawer, quote wizard, auth dialog
 │   │   │   └── ui/       Shared UI building blocks (buttons, dialogs, forms)
-│   │   ├── lib/          Mock data and state: products, cart, auth, translations (i18n)
+│   │   ├── lib/          API client and state: api, auth, catalog, cart, translations (i18n)
 │   │   ├── routes/       One file per page (home, catalog, wholesale, contact, ...)
 │   │   └── styles.css    Design tokens and global styles
 │   ├── tests/            Browser smoke tests (see docs/TESTING.md)

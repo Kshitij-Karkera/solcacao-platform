@@ -17,10 +17,10 @@ import { Slider } from "@/components/ui/slider";
 import { PageHeader } from "@/components/site/PageHeader";
 import { ProductCard } from "@/components/site/ProductCard";
 import { useI18n } from "@/lib/i18n";
+import { useProducts } from "@/lib/catalog";
 import {
   CATEGORIES,
   ORIGINS,
-  PRODUCTS,
   filterProducts,
   formatPrice,
   type Category,
@@ -64,10 +64,12 @@ function Catalog() {
   const [sort, setSort] = useState<SortKey>("featured");
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  // Live products from GET /api/products, filtered and sorted in the browser.
+  const products = useProducts();
   const results = useMemo(
     () =>
-      filterProducts(PRODUCTS, { search: q, origins, categories, cacaoRange, priceRange, sort }),
-    [q, origins, categories, cacaoRange, priceRange, sort],
+      filterProducts(products, { search: q, origins, categories, cacaoRange, priceRange, sort }),
+    [products, q, origins, categories, cacaoRange, priceRange, sort],
   );
 
   const toggle = <T,>(list: T[], v: T) =>

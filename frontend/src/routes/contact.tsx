@@ -1,12 +1,13 @@
 // Contact: customer inquiry page. Shows a localized form,
 // field-level validation, topic-specific WhatsApp links and contact details.
-// This prototype validates locally; sending email requires a backend endpoint.
+// Valid messages are sent to POST /api/contact, which stores the inquiry and emails the team.
 
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Clock, Mail, MapPin, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
-import { createInquirySchema } from "@/lib/inquiry";
+import { API_CATEGORY, createInquirySchema, type InquiryTopic } from "@/lib/inquiry";
+import { ApiError, api } from "@/lib/api";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -44,7 +45,7 @@ export const Route = createFileRoute("/contact")({
 });
 
 // Stable category IDs are separate from their translated display labels.
-type Topic = "retail" | "wholesale" | "sample" | "support";
+type Topic = InquiryTopic;
 
 function Contact() {
   const { t, lang } = useI18n();
@@ -57,10 +58,13 @@ function Contact() {
   const [errors, setErrors] = useState<
     Partial<Record<"name" | "email" | "message" | "category", string>>
   >({});
+  // True while the message is being sent, so it cannot be submitted twice.
+  const [sending, setSending] = useState(false);
 
   // Prevent a browser page reload and validate the inquiry before clearing it.
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (sending) return;
     // Build the schema with the current language's required-field messages.
     // Trimming rejects whitespace-only names/messages; maximum lengths limit input.
     const schema = createInquirySchema(c.errors);
@@ -75,12 +79,28 @@ function Contact() {
       setErrors(errs);
       return;
     }
-    // Demo only: no fetch/SMTP call occurs here. When adding POST /api/contact,
-    // send r.data (name, email, category, message), and clear only after API success.
-    // Keep delivery credentials on the server and preserve input on API failure.
+    // Send to the API; clear the form only after the server has stored the message,
+    // so nothing typed is lost if the request fails.
     setErrors({});
-    setForm({ name: "", email: "", message: "" });
-    toast.success(c.sent);
+    setSending(true);
+    try {
+      await api("/api/contact", {
+        body: {
+          name: r.data.name,
+          email: r.data.email,
+          category: API_CATEGORY[r.data.category],
+          message: r.data.message,
+          lang,
+        },
+        auth: false,
+      });
+      setForm({ name: "", email: "", message: "" });
+      toast.success(c.sent);
+    } catch (err) {
+      toast.error(err instanceof ApiError && err.status === 0 ? t.common.offline : c.failed);
+    } finally {
+      setSending(false);
+    }
   };
 
   // Build the message in EN/ES using the translated label of the chosen topic.
@@ -181,8 +201,8 @@ function Contact() {
               </p>
             )}
           </div>
-          <Button type="submit" size="lg">
-            {c.send}
+          <Button type="submit" size="lg" disabled={sending}>
+            {sending ? c.sending : c.send}
           </Button>
         </form>
 

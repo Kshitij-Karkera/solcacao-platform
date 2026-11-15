@@ -14,7 +14,7 @@ npm run dev -- --host 127.0.0.1 --port 5174
 
 All commands in this guide run from the `frontend/` folder.
 
-Open http://127.0.0.1:5174. The app uses browser-local mock data. Demo sign-in does not verify credentials. Do not use a real password. Contact, newsletter, quote upload and checkout do not contact a backend or payment provider. WhatsApp destinations are placeholders.
+Open http://127.0.0.1:5174. The app calls the API at `http://localhost:4000` (start it first, see `backend/README.md`, and include `http://127.0.0.1:5174` in the API's `CORS_ORIGINS`). Sign-in, cart sync, quote upload and the contact form use the API; the newsletter and checkout are still demonstrations with no payment provider. WhatsApp destinations are placeholders. Unit tests never contact the API: they use an in-memory stand-in (`src/test/mock-api.ts`).
 
 ## Automated checks
 
@@ -25,7 +25,7 @@ npm run lint
 npm run build
 ```
 
-Expected: 25 tests pass (4 test files), TypeScript passes, lint exits successfully with 13 fast-refresh warnings, production build passes. Warnings do not indicate a failed check. The hosted version runs on Render.
+Expected: 29 tests pass (4 test files), TypeScript passes, lint exits successfully with 18 fast-refresh warnings, production build passes. Warnings do not indicate a failed check. The hosted version runs on Render.
 
 ## Browser journeys
 
