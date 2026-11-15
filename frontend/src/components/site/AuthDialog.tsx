@@ -63,14 +63,14 @@ export function AuthDialog() {
       const user =
         mode === "register"
           ? await register({
-            name: data.name.trim(),
-            email,
-            password: data.password,
-            accountType: type,
-            role,
-            company: type === "b2b" ? data.company.trim() : undefined,
-            lang,
-          })
+              name: data.name.trim(),
+              email,
+              password: data.password,
+              accountType: type,
+              role,
+              company: type === "b2b" ? data.company.trim() : undefined,
+              lang,
+            })
           : await login(email, data.password);
       setForm({ name: "", company: "", email: "", password: "" });
       setDialogOpen(false);

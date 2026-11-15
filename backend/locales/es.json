@@ -1,0 +1,376 @@
+{
+  "nav": {
+    "shop": "Tienda",
+    "wholesale": "Mayoreo",
+    "sampler": "Arma tu Surtido",
+    "contact": "Contacto",
+    "account": "Cuenta",
+    "signIn": "Iniciar sesión",
+    "search": "Buscar chocolates",
+    "searchPlaceholder": "Busca por nombre u origen…",
+    "skip": "Saltar al contenido principal",
+    "menu": "Menú"
+  },
+  "home": {
+    "slides": [
+      {
+        "eyebrow": "Origen único · Orgánico",
+        "title": "Cacao que sabe a su tierra.",
+        "body": "Barras artesanales de seis orígenes latinoamericanos, del grano a la barra bajo un mismo sol.",
+        "cta": "Ver la colección"
+      },
+      {
+        "eyebrow": "Para hoteles, eventos y marcas",
+        "title": "Tu marca, moldeada en chocolate.",
+        "body": "Moldes personalizados, empaques de lujo y producción de marca blanca para socios en todo el mundo.",
+        "cta": "Explorar mayoreo"
+      }
+    ],
+    "channelsEyebrow": "Dos formas de disfrutar SolCacao",
+    "retailTitle": "Para tu mesa",
+    "retailBody": "Barras de origen único, colecciones de trufas y ediciones de temporada, enviadas frescas.",
+    "retailCta": "Ver el catálogo",
+    "b2bTitle": "Para tu negocio",
+    "b2bBody": "Regalos corporativos, amenidades de hotel y confitería de marca propia a gran escala.",
+    "b2bCta": "Solicitar cotización",
+    "seasonalEyebrow": "Edición limitada",
+    "seasonalTitle": "La cosecha de esta temporada",
+    "viewAll": "Ver todo",
+    "originsEyebrow": "Nuestros orígenes",
+    "originsTitle": "Seis países. Un sol.",
+    "originsBody": "Trabajamos directamente con productores orgánicos, pagando por encima del comercio justo y fermentando en origen.",
+    "samplerTitle": "Arma tu propio surtido",
+    "samplerBody": "Elige 6 o 12 piezas y las empacamos en una caja de recuerdo.",
+    "samplerCta": "Empezar"
+  },
+  "catalog": {
+    "eyebrow": "La colección",
+    "title": "Catálogo gourmet",
+    "filters": "Filtros",
+    "clear": "Limpiar todo",
+    "origin": "Origen",
+    "category": "Categoría",
+    "cacao": "% de cacao",
+    "price": "Precio",
+    "sort": "Ordenar",
+    "sortOptions": {
+      "featured": "Destacados",
+      "price-asc": "Precio: menor a mayor",
+      "price-desc": "Precio: mayor a menor",
+      "cacao-desc": "Cacao: mayor primero"
+    },
+    "results": "{n} productos",
+    "empty": "Ningún chocolate coincide con esos filtros.",
+    "categories": {
+      "bars": "Barras",
+      "truffles": "Trufas",
+      "bonbons": "Bombones",
+      "seasonal": "Temporada"
+    },
+    "showResults": "Ver resultados"
+  },
+  "product": {
+    "add": "Agregar al carrito",
+    "added": "Agregado al carrito",
+    "origin": "Origen",
+    "cacao": "Cacao",
+    "weight": "Peso",
+    "notes": "Notas de cata",
+    "inStock": "{n} disponibles",
+    "back": "Volver al catálogo",
+    "related": "También te puede gustar",
+    "seasonal": "Temporada",
+    "notFound": "No encontramos ese chocolate."
+  },
+  "cart": {
+    "title": "Tu carrito",
+    "empty": "Tu carrito está vacío.",
+    "emptyCta": "Descubrir chocolates",
+    "subtotal": "Subtotal",
+    "shipping": "El envío se calcula al pagar.",
+    "checkout": "Pagar",
+    "guest": "Compras como invitado. Inicia sesión para guardar tu carrito en tu cuenta.",
+    "synced": "Tu carrito se guardó en tu cuenta",
+    "remove": "Quitar",
+    "checkoutDone": "¡Pedido realizado! (prototipo — sin cobro)"
+  },
+  "auth": {
+    "demo": "Tu cuenta se guarda de forma segura en el servidor de SolCacao. Las contraseñas se cifran.",
+    "signInTitle": "Bienvenido de nuevo",
+    "registerTitle": "Crea tu cuenta",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "name": "Nombre completo",
+    "company": "Nombre de la empresa",
+    "accountType": "Tipo de cuenta",
+    "retail": "Minorista",
+    "retailHint": "Compra para ti",
+    "b2b": "Socio comercial",
+    "b2bHint": "Mayoreo y pedidos personalizados",
+    "role": "Soy…",
+    "roles": {
+      "retail": [
+        {
+          "id": "chocolate-lover",
+          "label": "Amante del chocolate"
+        },
+        {
+          "id": "gift-shopper",
+          "label": "Comprador de regalos"
+        }
+      ],
+      "b2b": [
+        {
+          "id": "pastry-chef",
+          "label": "Chef pastelero"
+        },
+        {
+          "id": "chocolatier",
+          "label": "Chocolatero"
+        },
+        {
+          "id": "hotel-restaurant",
+          "label": "Hotel / restaurante"
+        },
+        {
+          "id": "retailer",
+          "label": "Tienda / boutique"
+        },
+        {
+          "id": "event-planner",
+          "label": "Organizador de eventos"
+        },
+        {
+          "id": "corporate-gifting",
+          "label": "Regalos corporativos"
+        }
+      ]
+    },
+    "submitSignIn": "Iniciar sesión",
+    "submitRegister": "Crear cuenta",
+    "toRegister": "¿Eres nuevo? Crea una cuenta",
+    "toSignIn": "¿Ya tienes cuenta? Inicia sesión",
+    "welcome": "Bienvenido, {n}",
+    "signOut": "Cerrar sesión",
+    "errors": {
+      "email": "Ingresa un correo válido",
+      "password": "Mínimo 8 caracteres",
+      "name": "Ingresa tu nombre",
+      "company": "Ingresa el nombre de tu empresa",
+      "badLogin": "El correo o la contraseña son incorrectos",
+      "exists": "Ya existe una cuenta con este correo. Inicia sesión.",
+      "tooMany": "Demasiados intentos. Espera unos minutos e inténtalo de nuevo."
+    },
+    "working": "Un momento…"
+  },
+  "account": {
+    "title": "Tu cuenta",
+    "profile": "Perfil",
+    "type": "Tipo de cuenta",
+    "orders": "Pedidos recientes",
+    "noOrders": "Aún no tienes pedidos.",
+    "quotes": "Solicitudes de cotización",
+    "noQuotes": "Aún no hay solicitudes.",
+    "signedOut": "Inicia sesión para ver tu perfil, pedidos y cotizaciones.",
+    "status": "En revisión",
+    "role": "Rol",
+    "access": "Acceso",
+    "accessD2C": "D2C · Tienda minorista",
+    "accessB2B": "B2B · Mayoreo y pedidos personalizados",
+    "accessD2CItems": [
+      "Compra todo el catálogo",
+      "Arma una caja de muestras",
+      "Sigue tus pedidos"
+    ],
+    "accessB2BItems": [
+      "Precios de mayoreo",
+      "Moldes personalizados y empaque de lujo",
+      "Solicita y sigue cotizaciones"
+    ]
+  },
+  "wholesale": {
+    "eyebrow": "SolCacao para empresas",
+    "title": "Confitería hecha a tu medida.",
+    "body": "De hoteles boutique a eventos globales, diseñamos, moldeamos y empacamos chocolate con tu nombre.",
+    "cta": "Iniciar pedido personalizado",
+    "services": [
+      {
+        "title": "Moldes corporativos",
+        "body": "Tu logo o emblema en chocolate de origen único, del modelo 3D a la pieza terminada."
+      },
+      {
+        "title": "Diseño de empaque de lujo",
+        "body": "Cajas con estampado en oro, fundas grabadas y latas de recuerdo diseñadas en casa."
+      },
+      {
+        "title": "Marca blanca",
+        "body": "Nuestras recetas, tu etiqueta. Producción de marca propia con todas las normas."
+      }
+    ],
+    "stats": [
+      {
+        "value": "500",
+        "label": "Unidades mínimas"
+      },
+      {
+        "value": "4–6 sem",
+        "label": "Tiempo de entrega"
+      },
+      {
+        "value": "120+",
+        "label": "Hoteles socios"
+      }
+    ],
+    "wizardEyebrow": "Asistente de pedido",
+    "wizardTitle": "Solicita una cotización de fabricación",
+    "steps": [
+      "Perfil de cacao",
+      "Archivos de marca",
+      "Empaque",
+      "Revisar y enviar"
+    ],
+    "profileTitle": "Elige tu perfil de cacao",
+    "profiles": [
+      {
+        "id": "bold",
+        "name": "Oscuro intenso",
+        "desc": "80–85% · Colombia · tostado, intenso"
+      },
+      {
+        "id": "floral",
+        "name": "Oscuro floral",
+        "desc": "70% · Ecuador · jazmín, miel"
+      },
+      {
+        "id": "fruity",
+        "name": "Oscuro frutal",
+        "desc": "72% · México · cítrico, especias"
+      },
+      {
+        "id": "creamy",
+        "name": "Leche cremoso",
+        "desc": "45% · Ecuador · caramelo, nuez"
+      }
+    ],
+    "uploadTitle": "Sube tus vectores de marca o ficha técnica",
+    "uploadHint": "PDF, AI, SVG o EPS · hasta 20 MB",
+    "uploadCta": "Elegir archivo",
+    "uploadNone": "Ningún archivo seleccionado",
+    "uploadSkip": "También puedes enviar los archivos después por correo.",
+    "packagingTitle": "Define tu empaque",
+    "packagingTypes": [
+      {
+        "id": "giftbox",
+        "name": "Caja de regalo",
+        "desc": "Caja rígida, estampado"
+      },
+      {
+        "id": "sleeve",
+        "name": "Funda de barra",
+        "desc": "Envoltura impresa + foil"
+      },
+      {
+        "id": "pillow",
+        "name": "Empaque individual",
+        "desc": "Pieza de amenidad"
+      },
+      {
+        "id": "tin",
+        "name": "Lata de recuerdo",
+        "desc": "Lata metálica grabada"
+      }
+    ],
+    "quantity": "Cantidad",
+    "units": "unidades",
+    "finish": "Acabados",
+    "finishes": [
+      "Foil dorado",
+      "Grabado",
+      "Listón",
+      "Cartón reciclado"
+    ],
+    "reviewTitle": "Revisión y datos de contacto",
+    "company": "Empresa",
+    "contactName": "Nombre de contacto",
+    "email": "Correo de trabajo",
+    "deadline": "Fecha requerida",
+    "notes": "Notas para nuestro equipo",
+    "estimate": "Rango estimado",
+    "back": "Atrás",
+    "next": "Continuar",
+    "submit": "Enviar solicitud",
+    "successTitle": "Solicitud recibida",
+    "successBody": "Tu referencia es {ref}. Nuestro equipo responderá por correo en dos días hábiles.",
+    "newRequest": "Nueva solicitud",
+    "required": "Completa este paso para continuar.",
+    "invalidFile": "Elige un archivo PDF, AI, SVG o EPS de hasta 20 MB.",
+    "signInRequired": "Inicia sesión con una cuenta de socio comercial para enviar tu solicitud.",
+    "b2bOnly": "Las cotizaciones requieren una cuenta de socio comercial.",
+    "sending": "Enviando…",
+    "submitFailed": "No pudimos enviar tu solicitud. Revisa los datos e inténtalo de nuevo.",
+    "summaryProfile": "Perfil",
+    "summaryFile": "Archivo de marca",
+    "summaryPackaging": "Empaque"
+  },
+  "sampler": {
+    "eyebrow": "Personaliza",
+    "title": "Arma tu surtido",
+    "body": "Elige el tamaño de tu caja y llena cada espacio con tus chocolates favoritos.",
+    "size": "Tamaño de caja",
+    "pieces": "{n} piezas",
+    "choose": "Elige sabores",
+    "filled": "{a} de {b} llenos",
+    "clear": "Vaciar caja",
+    "add": "Agregar surtido al carrito",
+    "full": "Tu caja está llena",
+    "gift": "Mensaje de regalo (opcional)",
+    "name": "Surtido personalizado · {n} pzs"
+  },
+  "contact": {
+    "eyebrow": "Contáctanos",
+    "title": "Nos encantaría saber de ti",
+    "body": "¿Dudas sobre un pedido, mayoreo o una muestra personalizada? Escríbenos.",
+    "name": "Nombre",
+    "email": "Correo",
+    "category": "Tema",
+    "categories": {
+      "retail": "Pedido minorista",
+      "wholesale": "Consulta de mayoreo",
+      "sample": "Solicitud de muestra B2B",
+      "support": "Soporte"
+    },
+    "message": "Mensaje",
+    "send": "Enviar mensaje",
+    "sent": "¡Gracias! Tu mensaje fue enviado. Te responderemos pronto por correo.",
+    "sending": "Enviando…",
+    "failed": "No pudimos enviar tu mensaje. Inténtalo de nuevo.",
+    "whatsapp": "Chatear por WhatsApp",
+    "whatsappBody": "¿Prefieres chatear? Nuestro equipo responde por WhatsApp, lun–sáb.",
+    "visit": "Visita el taller",
+    "hours": "Lun–Sáb · 9:00–18:00",
+    "errors": {
+      "name": "Ingresa tu nombre",
+      "email": "Ingresa un correo válido",
+      "message": "El mensaje debe tener al menos 10 caracteres",
+      "category": "Elige un tema válido",
+      "nameLong": "El nombre debe tener como máximo 80 caracteres",
+      "emailLong": "El correo debe tener como máximo 170 caracteres",
+      "messageLong": "El mensaje debe tener como máximo 2000 caracteres"
+    }
+  },
+  "footer": {
+    "tagline": "Cacao orgánico de origen único, hecho bajo un mismo sol.",
+    "shop": "Tienda",
+    "company": "Empresa",
+    "newsletter": "Recibe nuestras notas de cata",
+    "newsletterCta": "Suscribirme",
+    "subscribed": "Solo demostración. No se envió ninguna suscripción.",
+    "rights": "Prototipo con fines de demostración."
+  },
+  "common": {
+    "language": "Idioma",
+    "close": "Cerrar",
+    "offline": "No pudimos conectar con el servidor de SolCacao. Puede estar iniciando; inténtalo en un minuto.",
+    "sessionExpired": "Tu sesión expiró. Inicia sesión de nuevo."
+  }
+}

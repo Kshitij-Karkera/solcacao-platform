@@ -87,6 +87,8 @@ Auth header for protected routes: `Authorization: Bearer <token>`.
 | POST | `/api/contact` | Public | `{ name, email, category (general\|wholesale\|order\|press\|feedback), message, company?, lang? }` | 201 |
 | POST | `/api/sampler` | Public | `{ name, email, size (6\|12), picks: string[], company?, message? }` | 201 |
 | GET | `/api/whatsapp?lang=es` | Public | – | 200 `{ general, wholesale }` links |
+| GET | `/api/i18n` | Public | – | 200 `{ languages, default, sections }` |
+| GET | `/api/i18n/:lang` | Public | `ns` (csv of sections, optional) | 200 `{ lang, dict }`; 404 unknown language, 400 unknown section |
 | GET | `/static/images/*` | Public | product images | 200 |
 
 ### Roles & security
@@ -132,4 +134,4 @@ The front end (`frontend/`) calls this API with `fetch()` through `frontend/src/
 
 Product images in `public/images` are served at `/static/images/...` with `Cross-Origin-Resource-Policy: cross-origin`, because the website runs on a different origin than the API.
 
-The earlier `/api/i18n` endpoint was removed: the 13-table schema has no translations table and the front end ships its own dictionaries.
+The website's English and Spanish text is served at `GET /api/i18n/:lang` from `locales/en.json` and `locales/es.json` (cached by browsers for an hour). These files are generated from the website's dictionaries: after changing any text in `frontend/src/lib/i18n.tsx`, run `npm run locales:export` in `frontend/` and commit the updated JSON. A front-end test fails if they drift apart. Text that depends on a value is stored as a template such as `"{n} in stock"`.

@@ -25,7 +25,7 @@ npm run lint
 npm run build
 ```
 
-Expected: 29 tests pass (4 test files), TypeScript passes, lint exits successfully with 18 fast-refresh warnings, production build passes. Warnings do not indicate a failed check. The hosted version runs on Render.
+Expected: 34 tests pass (5 test files), TypeScript passes, lint exits successfully with 19 fast-refresh warnings, production build passes. Warnings do not indicate a failed check. The hosted version runs on Render.
 
 ## Browser journeys
 

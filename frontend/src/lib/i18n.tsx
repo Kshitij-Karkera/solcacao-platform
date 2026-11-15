@@ -1,8 +1,13 @@
 /**
- * Client-side localization. In production the dictionaries are served by the
- * localization API; here they are bundled so the prototype works offline.
+ * English/Spanish site text.
+ * The text is served by the API at GET /api/i18n/:lang (backend/locales/*.json).
+ * The dictionaries below are the master copy: they are bundled so the first render,
+ * server rendering and offline use always have text, and they hold the functions
+ * for text that depends on a value (e.g. "3 in stock"). After changing any text here,
+ * run `npm run locales:export` to update backend/locales.
  */
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { api } from "./api";
 import { readStorage, writeStorage } from "./storage";
 import type { Lang } from "./products";
 
@@ -670,6 +675,28 @@ export const DICTS: Record<Lang, Dict> = { en, es };
 // localStorage key that remembers the chosen language
 const STORAGE_KEY = "solcacao.lang";
 
+/**
+ * Lay the API's text over a bundled dictionary. Only plain text is replaced; functions,
+ * the dictionary's shape and anything missing or of the wrong type keep the bundled value.
+ */
+export function mergeDict<T>(base: T, remote: unknown): T {
+  if (typeof base === "string") return (typeof remote === "string" ? remote : base) as T;
+  if (Array.isArray(base))
+    return (
+      Array.isArray(remote) && remote.length === base.length
+        ? base.map((b, i) => mergeDict(b, remote[i]))
+        : base
+    ) as T;
+  if (base && typeof base === "object" && remote && typeof remote === "object") {
+    const r = remote as Record<string, unknown>;
+    return Object.fromEntries(Object.entries(base).map(([k, v]) => [k, mergeDict(v, r[k])])) as T;
+  }
+  return base; // functions, numbers, or nothing usable from the API
+}
+
+/** Dictionaries already fetched from the API in this page load. */
+const fetched: Partial<Record<Lang, Dict>> = {};
+
 // What useI18n() returns
 interface I18nValue {
   lang: Lang;
@@ -684,6 +711,8 @@ const I18nContext = createContext<I18nValue | null>(null);
 export function I18nProvider({ children }: { children: ReactNode }) {
   // Always start in English so server and client HTML match
   const [lang, setLangState] = useState<Lang>("en");
+  // Text loaded from the API, per language (the bundled copy is used until it arrives)
+  const [remote, setRemote] = useState<Partial<Record<Lang, Dict>>>({});
 
   // Read saved preference after hydration to avoid SSR mismatches.
   useEffect(() => {
@@ -702,6 +731,27 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     document.documentElement.lang = lang;
   }, [lang]);
 
+  // Load this language's text from the API once; keep the bundled text if that fails.
+  useEffect(() => {
+    if (fetched[lang]) {
+      setRemote((r) => (r[lang] ? r : { ...r, [lang]: fetched[lang] }));
+      return;
+    }
+    let cancelled = false;
+    api<{ dict: unknown }>(`/api/i18n/${lang}`, { auth: false })
+      .then(({ dict }) => {
+        const merged = mergeDict(DICTS[lang], dict);
+        fetched[lang] = merged;
+        if (!cancelled) setRemote((r) => ({ ...r, [lang]: merged }));
+      })
+      .catch(() => {
+        // Offline or API asleep: the bundled dictionary is already showing.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [lang]);
+
   // Change language and remember the choice
   const setLang = (l: Lang) => {
     setLangState(l);
@@ -709,7 +759,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <I18nContext.Provider value={{ lang, t: DICTS[lang], setLang }}>
+    <I18nContext.Provider value={{ lang, t: remote[lang] ?? DICTS[lang], setLang }}>
       {children}
     </I18nContext.Provider>
   );

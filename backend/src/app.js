@@ -13,6 +13,7 @@ import productRoutes from "./routes/products.routes.js";
 import cartRoutes from "./routes/cart.routes.js";
 import b2bRoutes from "./routes/b2b.routes.js";
 import inquiryRoutes from "./routes/inquiries.routes.js";
+import i18nRoutes from "./routes/i18n.routes.js";
 import { errorHandler, notFound } from "./middleware/error.js";
 
 export const app = express();
@@ -54,6 +55,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/b2b", b2bRoutes);
 app.use("/api", inquiryRoutes); // /api/contact, /api/sampler, /api/whatsapp
+app.use("/api/i18n", i18nRoutes); // English/Spanish site text (backend/locales/*.json)
 
 app.use(notFound);
 app.use(errorHandler);

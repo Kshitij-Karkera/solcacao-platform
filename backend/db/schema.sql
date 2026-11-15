@@ -78,9 +78,13 @@ CREATE TABLE dbo.Products (
     active BIT NOT NULL DEFAULT 1,                                 -- + 0 = hidden from the catalog
     created_at DATETIME NOT NULL DEFAULT GETDATE()                 -- +
 );
-CREATE INDEX idx_Products_origin ON dbo.Products(category_origin);
-CREATE INDEX idx_Products_cacao ON dbo.Products(cacao_percent);
-CREATE INDEX idx_Products_price ON dbo.Products(price);
+-- Indexes for the catalog filters (created only if missing, so migrate can be re-run)
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'idx_Products_origin' AND object_id = OBJECT_ID('dbo.Products'))
+    CREATE INDEX idx_Products_origin ON dbo.Products(category_origin);
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'idx_Products_cacao' AND object_id = OBJECT_ID('dbo.Products'))
+    CREATE INDEX idx_Products_cacao ON dbo.Products(cacao_percent);
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'idx_Products_price' AND object_id = OBJECT_ID('dbo.Products'))
+    CREATE INDEX idx_Products_price ON dbo.Products(price);
 GO
 
 IF OBJECT_ID('dbo.Inventory') IS NULL
@@ -202,4 +206,24 @@ CREATE TABLE dbo.NotificationLog (
     FOREIGN KEY (retail_order_id) REFERENCES RetailOrders(order_id),
     FOREIGN KEY (b2b_quote_request_id) REFERENCES B2BQuoteRequests(quote_id)
 );
+GO
+
+-- Trigger: protects stock levels. Rejects any insert or update that would leave
+-- negative stock, or more units reserved than are on hand (prevents overselling).
+CREATE OR ALTER TRIGGER dbo.trg_Inventory_PreventOversell
+ON dbo.Inventory
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    IF EXISTS (
+        SELECT 1 FROM inserted
+        WHERE quantity_on_hand < 0
+           OR reserved_quantity < 0
+           OR reserved_quantity > quantity_on_hand
+    )
+    BEGIN
+        THROW 50001, 'Inventory rule broken: stock cannot be negative or over-reserved.', 1;
+    END
+END
 GO

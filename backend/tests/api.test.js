@@ -219,3 +219,38 @@ test("contact form validates and stores", async () => {
   });
   assert.equal(ok.status, 201);
 });
+
+test("GET /api/i18n lists languages and dictionary sections", async () => {
+  const res = await request(app).get("/api/i18n");
+  assert.equal(res.status, 200);
+  assert.deepEqual(res.body.languages, ["en", "es"]);
+  assert.ok(res.body.sections.includes("nav"));
+});
+
+test("GET /api/i18n/es returns Spanish text, whole or by section", async () => {
+  const all = await request(app).get("/api/i18n/es");
+  assert.equal(all.status, 200);
+  assert.equal(all.body.dict.nav.shop, "Tienda");
+  const some = await request(app).get("/api/i18n/es?ns=nav,cart");
+  assert.deepEqual(Object.keys(some.body.dict), ["nav", "cart"]);
+});
+
+test("i18n: unknown language -> 404, unknown section -> 400", async () => {
+  assert.equal((await request(app).get("/api/i18n/fr")).status, 404);
+  assert.equal((await request(app).get("/api/i18n/en?ns=nope")).status, 400);
+});
+
+test("DB trigger blocks reserving more stock than is on hand", async () => {
+  // Pick any product's inventory row and try to reserve 1 more unit than exists.
+  const { rows } = await pool.query(
+    "SELECT TOP 1 inventory_id, quantity_on_hand FROM Inventory ORDER BY inventory_id",
+  );
+  assert.ok(rows[0], "seed data should include inventory rows");
+  await assert.rejects(
+    pool.query("UPDATE Inventory SET reserved_quantity = $1 WHERE inventory_id = $2", [
+      rows[0].quantity_on_hand + 1,
+      rows[0].inventory_id,
+    ]),
+    /Inventory rule broken/,
+  );
+});
