@@ -1,59 +1,52 @@
 # SolCacao Artisanal Chocolate Platform
 
-SolCacao is a full-stack, bilingual (Spanish/English) e-commerce web application for a premium single-origin cacao brand. It brings the whole customer journey together in one codebase:
+SolCacao is a full-stack, bilingual (English/Spanish) e-commerce web application for a premium single-origin cacao brand. One codebase covers the whole customer journey:
 
-- **Accounts and security:** secure registration and login for retail customers and B2B partners, using hashed passwords, JWT sessions and role-based access.
-- **Bilingual storefront:** a responsive layout with shared navigation and full Spanish/English language switching across every page.
-- **Gourmet catalog and cart:** single-origin chocolate bars and truffles with search and multi-criteria filtering (origin, cacao percentage), a persistent slide-out shopping cart, and guest or registered checkout.
-- **B2B wholesale and custom manufacturing:** a wholesale portal for hotels, corporate events and partners, with a 4-step wizard for requesting custom-branded chocolate quotes and uploading design files.
-- **Personalization, contact and notifications:** personalized customer options, a Contact Us page that stores inquiries, and email notifications that are logged in the database.
-- **Shared database:** a SQL Server schema of 13 related tables that backs every part of the platform.
+- **Accounts and security:** registration and sign-in for retail customers and B2B partners, with hashed passwords, JWT sessions and role-based access.
+- **Bilingual storefront:** a responsive layout with shared navigation and full English/Spanish switching on every page.
+- **Gourmet catalog and cart:** single-origin bars and truffles with search and filters (origin, cacao percentage, price), and a cart that is saved to the customer's account.
+- **B2B wholesale and custom manufacturing:** a wholesale portal with a 4-step wizard for custom-branded chocolate quotes, including design file upload.
+- **Personalization, contact and notifications:** a sampler box builder, a Contact Us page that stores inquiries, and email notifications recorded in the database.
+- **Shared database:** a 13-table SQL Server schema behind every part of the platform.
 
-Course project for **CSE 5335: Web Data Management** (Fall Semester), developed by a team of five students.
+Course project for **CSE 5335: Web Data Management** (Fall 2026), built by a team of five students.
+
+| | Live | Documentation |
+|---|---|---|
+| Website | https://solcacao-web.onrender.com | [`frontend/README.md`](frontend/README.md) |
+| API | https://solcacao-api.onrender.com/api/health | [`backend/README.md`](backend/README.md) |
+| Database | Azure SQL Database `SolCacao` | [`backend/db/schema.sql`](backend/db/schema.sql) |
+
+The live services run on free plans and sleep when idle: the first request after a quiet period can take about a minute.
 
 ---
 
 ## Table of Contents
 
-1. [Features](#features)
+1. [Architecture](#architecture)
 2. [Tech Stack](#tech-stack)
-3. [System Architecture](#system-architecture)
-4. [Team and Responsibilities](#team-and-responsibilities)
-5. [Database Design](#database-design)
-6. [Core API Routes](#core-api-routes)
-7. [Setting Up the Database](#setting-up-the-database)
-8. [Getting Started](#getting-started)
-9. [Implementation Roadmap](#implementation-roadmap-8-weeks)
+3. [Team and Responsibilities](#team-and-responsibilities)
+4. [Database Design](#database-design)
+5. [Core API Routes](#core-api-routes)
+6. [Running It Locally](#running-it-locally)
+7. [Repository Structure](#repository-structure)
+8. [Implementation Roadmap](#implementation-roadmap-8-weeks)
 
 ---
 
-## Features
+## Architecture
 
-**Accounts and security**
-- Registration and login for retail customers and B2B partners
-- Password hashing with bcrypt and stateless JWT authentication
-- Role-based route guards (public, user, partner)
+The front end and back end are separate applications that talk only through a REST/JSON API:
 
-**Core layout and localization**
-- Responsive layout with shared navigation, header and footer
-- Full Spanish/English language switching
+```
+React website  --- fetch(), JSON over HTTPS --->  Express API  <--->  Azure SQL Database
+(Render)           Authorization: Bearer JWT      (Render)              (13 tables)
+                                                      |
+                                                      +--> Nodemailer (SMTP)   email notifications
+                                                      +--> Multer              design file uploads
+```
 
-**Gourmet catalog and cart**
-- Product catalog with filtering by origin and cacao percentage, plus search
-- Slide-out cart with persistent cart state
-- Guest checkout and registered-user checkout
-- Inventory tracking per product
-
-**B2B wholesale and customization**
-- Landing homepage and B2B Wholesale page
-- Four-step custom manufacturing quote wizard
-- Brand logo / design file upload for custom orders
-- Quote requests stored for follow-up by the SolCacao team
-
-**Personalization, contact and notifications**
-- Personalization options for customers
-- Contact Us page, with submissions stored as inquiries
-- Email notifications sent through Nodemailer and recorded in a notification log
+Every request is validated on the server (Zod) and answered with standard HTTP status codes. Prices, stock and permissions are always decided by the server, never by the browser.
 
 ---
 
@@ -61,29 +54,15 @@ Course project for **CSE 5335: Web Data Management** (Fall Semester), developed 
 
 | Layer | Technology |
 |---|---|
-| Front end | React 18+ (Hooks, Context) |
-| Styling and icons | Tailwind CSS, Lucide React |
-| Back end | Node.js, Express.js |
-| Database | SQL Server (relational model with primary and foreign keys) |
-| Auth and security | JWT, bcrypt, role-based route guards |
-| Integrations | Nodemailer (SMTP), multer (file uploads) |
-
-> All data is modeled as relational tables with primary and foreign keys in SQL Server.
-
----
-
-## System Architecture
-
-The front end and back end are fully decoupled:
-
-```
-React front end  <--  JSON over HTTP (REST)  -->  Express API  <-->  SQL Server
-                                                      |
-                                                      +--> Nodemailer (SMTP)   email notifications
-                                                      +--> multer              file uploads
-```
-
-The React client talks to the server only through stateless RESTful JSON APIs. Every request is validated on the server and answered with standard HTTP status codes.
+| Front end | React 19, TanStack Start and Router, Vite |
+| Styling and icons | Tailwind CSS 4, Radix/shadcn UI components, Lucide |
+| Back end | Node.js 20+, Express 4 |
+| Database | SQL Server / Azure SQL Database (`mssql` driver) |
+| Auth and security | JWT, bcrypt, role-based route guards, Helmet, rate limiting, CORS |
+| Validation | Zod (shared approach on client and server) |
+| Integrations | Nodemailer (SMTP), Multer (file uploads), Azure Blob Storage (optional) |
+| Testing | Vitest and Testing Library (front end), Node test runner and Supertest (API) |
+| Hosting | Render (website and API), Azure (database) |
 
 ---
 
@@ -97,34 +76,32 @@ The React client talks to the server only through stateless RESTful JSON APIs. E
 | 4 | Kshitij Sadanand Karkera | B2B Services and Customization Wizard |
 | 5 | Suhas Surendra Kumar | Personalization, Contact and Notifications |
 
-### What each subsystem covers
-
-- **Student 1: Authentication, Security and Databases.** Registration and login endpoints, bcrypt password hashing, JWT issuing and verification, role-based route guards, and the database layer.
-- **Student 2: Core Layout, Navigation and Localization.** Page shell, navigation, routing, and the Spanish/English language system.
-- **Student 3: Gourmet Catalog, Search and Cart State.** Product listing and filtering, search, the slide-out cart, and cart persistence.
-- **Student 4: B2B Services and Customization Wizard.** Landing homepage, B2B Wholesale page, the 4-step customization wizard, quote and design-file storage, and the `POST /api/b2b/quote` endpoint (multipart upload with multer).
-- **Student 5: Personalization, Contact and Notifications.** Personalization features, the Contact Us page and inquiry handling, and email notifications with logging.
+- **Student 1: Authentication, Security and Databases.** Sign-in dialog and account page; registration, login and profile endpoints; bcrypt hashing, JWT and role guards; the database layer, schema and scripts.
+- **Student 2: Core Layout, Navigation and Localization.** Page shell, navigation, routing, the English/Spanish language system and the product images served by the API.
+- **Student 3: Gourmet Catalog, Search and Cart State.** Catalog page with search and filters, the slide-out cart, and the product and cart endpoints.
+- **Student 4: B2B Services and Customization Wizard.** Home page, Wholesale page and 4-step quote wizard; the B2B quote endpoints and design file storage.
+- **Student 5: Personalization, Contact and Notifications.** Sampler builder, Contact Us page and WhatsApp links; the contact and sampler endpoints and email notifications with logging.
 
 ---
 
 ## Database Design
 
-The schema is in [`SolCacao_schema.sql`](./SolCacao_schema.sql). It contains 13 tables in three groups, matching the team ER diagram.
+The original design is in [`SolCacao_schema.sql`](SolCacao_schema.sql). The version the API runs is [`backend/db/schema.sql`](backend/db/schema.sql): the same 13 tables, columns and relationships, plus a few additions the API needs (auto-numbered IDs, defaults and extra columns, each marked `-- +`).
 
 ### 1. Identity, B2B Profile and Support
 | Table | Purpose |
 |---|---|
-| `Users` | All accounts (customers and partners) with hashed passwords and roles |
+| `Users` | All accounts (customers and partners) with hashed passwords |
 | `Addresses` | Shipping and billing addresses linked to users |
 | `CorporatePartners` | B2B profile details for partner accounts |
-| `Inquiries` | Messages submitted through the Contact Us page |
+| `Inquiries` | Messages from the Contact Us page and sampler requests |
 
 ### 2. D2C Catalog, Cart and Retail Order
 | Table | Purpose |
 |---|---|
-| `Products` | Chocolate bars and truffles with origin, cacao percentage and price |
+| `Products` | Chocolate bars and truffles with origin, cacao percentage, price and EN/ES text |
 | `Inventory` | Stock level for each product (one row per product) |
-| `Carts` | A customer's shopping cart |
+| `Carts` | A customer's saved shopping cart |
 | `CartItems` | Products and quantities in a cart |
 | `RetailOrders` | Completed retail orders |
 | `OrderItems` | Products and quantities in each order |
@@ -132,123 +109,55 @@ The schema is in [`SolCacao_schema.sql`](./SolCacao_schema.sql). It contains 13 
 ### 3. B2B Custom Manufacturing and Notifications
 | Table | Purpose |
 |---|---|
-| `B2BQuoteRequests` | Custom order requests submitted through the 4-step wizard |
+| `B2BQuoteRequests` | Custom order requests from the 4-step wizard |
 | `DesignFiles` | Uploaded brand logos and design files attached to a quote |
-| `NotificationLog` | Record of emails sent to users, linked to the related order, quote or inquiry |
+| `NotificationLog` | Every email sent (or skipped), linked to its inquiry, order or quote |
 
-Relationships are enforced with foreign key constraints, and the one-to-one link between `Inventory` and `Products` is enforced with a `UNIQUE` constraint.
+Relationships are enforced with foreign keys; the one-to-one link between `Inventory` and `Products` is enforced with a `UNIQUE` constraint.
 
 ---
 
 ## Core API Routes
 
+The main endpoints. The full list with request and response details is in [`backend/README.md`](backend/README.md#5-api-map).
+
 | Method | Endpoint | Access | Payload | Success |
 |---|---|---|---|---|
-| POST | `/api/auth/register` | Public | JSON user details and account type | 201 Created |
+| POST | `/api/auth/register` | Public | JSON user details and account type | 201 Created (with JWT) |
 | POST | `/api/auth/login` | Public | JSON credentials (email, password) | 200 OK (with JWT) |
-| GET | `/api/products` | Public | URL query filters (origin, percentage) | 200 OK (JSON list) |
+| GET | `/api/products` | Public | URL query filters (origin, cacao percentage, price, search) | 200 OK (JSON list) |
 | POST | `/api/cart/persist` | User | JSON array of the full cart state | 200 OK |
 | POST | `/api/b2b/quote` | Partner | Multipart form (custom order and brand logo) | 201 Created |
+| POST | `/api/contact` | Public | JSON name, email, category and message | 201 Created |
 
 ---
 
-## Setting Up the Database
+## Running It Locally
 
-### Local SQL Server Express
-
-1. Install SQL Server Express and SQL Server Management Studio (SSMS).
-2. In SSMS, connect to `localhost\SQLEXPRESS` using Windows Authentication. Tick **Trust Server Certificate** if prompted.
-3. Open `SolCacao_schema.sql` and press **F5**. The script creates the `SolCacao` database and all 13 tables.
-
----
-
-## Getting Started
-
-**Live version:** https://solcacao-web.onrender.com (the first visit after a quiet period can take about a minute to wake up).
-
-The front end calls the API (`backend/`) with `fetch()`: sign-in, catalog, cart, B2B quotes and the contact form all use it. In development it expects the API at `http://localhost:4000` (see `backend/README.md`); production builds use `https://solcacao-api.onrender.com`. Set `VITE_API_URL` to point it elsewhere. If the API cannot be reached, the catalog falls back to its bundled product list.
-
-### Prerequisites
-
-- [Node.js](https://nodejs.org/) 22 LTS or newer (this also installs npm)
-- [Git](https://git-scm.com/)
-
-### Run it locally
+Prerequisites: [Node.js](https://nodejs.org/) 22 LTS or newer, [Git](https://git-scm.com/), and a SQL Server database (Docker's `mcr.microsoft.com/mssql/server` image works well for local development).
 
 ```bash
-# 1. Clone the repository
 git clone https://github.com/Kshitij-Karkera/solcacao-platform.git
 cd solcacao-platform
-
-# 2. Move into the front-end folder and install dependencies
-cd frontend
-npm install --legacy-peer-deps
-
-# 3. Start the development server
-npm run dev
 ```
 
-Run the `npm` commands from the `frontend/` folder. The terminal prints the local address, usually `http://localhost:5173`. Open it in a browser; the page reloads automatically when you edit a file. Press `Ctrl + C` to stop the server.
-
-The `--legacy-peer-deps` flag is needed because a few packages declare peer dependency ranges that npm would otherwise reject.
-
-### Build and run the production version
-
-```bash
-npm run build
-node .output/server/index.mjs
-```
-
-The build creates a Node server bundle in the `.output` folder, and the second command starts it. The site is then served at `http://localhost:3000`. The hosted version on Render uses the same two commands, with the **Root Directory** set to `frontend` and the environment variable `NITRO_PRESET=node-server` set in its dashboard.
-
-### Available scripts
-
-| Command | What it does |
-|---|---|
-| `npm run dev` | Starts the development server with live reload |
-| `npm run build` | Creates the production build in `.output` |
-| `npm run preview` | Previews the production build locally |
-| `npm run lint` | Checks the code style |
-| `npm test` | Runs the unit tests (Vitest) |
-
-### Project structure
-
-```
-solcacao-platform/
-├── frontend/             React front end (run all npm commands from here)
-│   ├── public/           Static files (favicon, robots.txt)
-│   ├── src/
-│   │   ├── assets/       Product and hero images
-│   │   ├── components/
-│   │   │   ├── site/     Header, footer, cart drawer, quote wizard, auth dialog
-│   │   │   └── ui/       Shared UI building blocks (buttons, dialogs, forms)
-│   │   ├── lib/          API client and state: api, auth, catalog, cart, translations (i18n)
-│   │   ├── routes/       One file per page (home, catalog, wholesale, contact, ...)
-│   │   └── styles.css    Design tokens and global styles
-│   ├── tests/            Browser smoke tests (see docs/TESTING.md)
-│   ├── package.json      Dependencies and scripts
-│   └── vite.config.ts    Build configuration
-├── docs/                 Front-end test report, testing guide
-└── SolCacao_schema.sql   SQL Server database schema
-```
-
-### Pages to try
-
-| Address | Page |
-|---|---|
-| `/` | Home with hero slides and the retail and B2B entry points |
-| `/catalog` | Product grid with search, filters and sorting |
-| `/products/<id>` | Product detail page |
-| `/wholesale` | B2B wholesale page with the 4-step quote wizard |
-| `/sampler` | Custom chocolate sampler builder |
-| `/contact` | Contact form with validation |
-| `/account` | Account and sign-in |
+1. **Start the API** (terminal 1): follow [`backend/README.md`](backend/README.md) to create `backend/.env`, build the database (`npm run db:migrate` and `npm run db:seed`) and run `npm run dev`. It listens on `http://localhost:4000`.
+2. **Start the website** (terminal 2): follow [`frontend/README.md`](frontend/README.md), in short `cd frontend`, `npm install --legacy-peer-deps`, `npm run dev`. Open `http://localhost:5173`.
 
 Use the **EN / ES** switch in the header to change the language.
 
-### Database
+---
 
-The SQL Server schema is not connected to the front end yet. To create it, follow [Setting Up the Database](#setting-up-the-database).
+## Repository Structure
+
+```
+solcacao-platform/
+├── frontend/             React website            → frontend/README.md
+├── backend/              Express API and database → backend/README.md
+├── docs/                 Testing guide and front-end test report
+├── SolCacao_schema.sql   Original database design (13 tables)
+└── roadmap.md            Project roadmap
+```
 
 ---
 
@@ -257,6 +166,6 @@ The SQL Server schema is not connected to the front end yet. To create it, follo
 | Phase | Weeks | Focus |
 |---|---|---|
 | 1 | 1-2 | Architecture and setup: repository, database design, routing shell, localization structure, prototype |
-| 2 | 3-4 | Core development: components, REST routes, endpoint validation, client-side state |
-| 3 | 5-6 | Integration: connect React to Express endpoints, security review, verify ES/EN translations |
-| 4 | 7-8 | Audit, polish and launch: asset compression, query optimization, lazy loading, cloud deployment |
+| 2 | 3-4 | Core development: components, client-side state, validation, accessibility |
+| 3 | 5-6 | Back end and integration: Express API, Azure SQL database, server-side logic, React connected with `fetch()` |
+| 4 | 7-8 | Audit, polish and launch: asset compression, query optimization, lazy loading, final deployment |

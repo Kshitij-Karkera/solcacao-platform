@@ -42,12 +42,23 @@ npm start        # production
 ```
 Health check: `GET /api/health` → `{ "status": "ok", "db": "up" }`
 
-## 4. Deploy (any Node host — Azure App Service example)
+## 4. Deploy (Render, as used for the live API)
 
-- Runtime: Node 20 LTS, startup command `npm start`.
-- Add every variable from `.env.example` under **Configuration → Application settings**.
-- Set `CORS_ORIGINS` to the exact URL(s) where the website is hosted.
-- Use `STORAGE_DRIVER=azure` in production so uploads survive restarts.
+The live API runs at **https://solcacao-api.onrender.com** as a Render web service:
+
+| Setting | Value |
+|---|---|
+| Root Directory | `backend` |
+| Build Command | `npm install` |
+| Start Command | `npm start` |
+| Health Check Path | `/api/health` |
+| Region | Oregon (US West) |
+
+Environment variables set in Render: `NODE_ENV=production`, `CORS_ORIGINS` (the website's exact URL, plus `http://localhost:5173` for local development), the `DB_*` values for Azure SQL (`DB_ENCRYPT=true`, `DB_TRUST_CERT=false`) and a long random `JWT_SECRET`. Do not set `PORT` (Render provides it), and leave the `SMTP_*` variables unset until a real mailbox is configured (emails are then logged instead of sent).
+
+Azure SQL must allow Render's outbound IP ranges (Render dashboard → **Connect → Outbound**) under the server's **Networking → Firewall rules**.
+
+On the free plan the service sleeps after about 15 minutes without traffic; the next request takes up to a minute. Uploaded design files are kept on Render's temporary disk unless `STORAGE_DRIVER=azure` is configured.
 
 ## 5. API map
 
@@ -117,11 +128,8 @@ npm run db:reset && npm run db:migrate && npm run db:seed && npm test   # uses t
 
 ## 8. Connecting the website
 
-Set the API base URL in the frontend (e.g. `VITE_API_URL=https://api.solcacao.com`) and replace the mock modules:
-- `src/lib/auth.tsx` → `/api/auth/register`, `/api/auth/login`, `/api/auth/me` (store the returned token)
-- `src/lib/cart.tsx` → `/api/cart/merge` after login, `/api/cart/persist` on change
-- `src/lib/products.ts` → `GET /api/products`
-- `QuoteWizard` → `POST /api/b2b/quote` with `FormData`
-- Contact & sampler pages → `/api/contact`, `/api/sampler`
+The front end (`frontend/`) calls this API with `fetch()` through `frontend/src/lib/api.ts`. In development it uses `http://localhost:4000`; production builds use `https://solcacao-api.onrender.com` (override with `VITE_API_URL`). See [`frontend/README.md`](../frontend/README.md) for which page calls which endpoint.
+
+Product images in `public/images` are served at `/static/images/...` with `Cross-Origin-Resource-Policy: cross-origin`, because the website runs on a different origin than the API.
 
 The earlier `/api/i18n` endpoint was removed: the 13-table schema has no translations table and the front end ships its own dictionaries.
