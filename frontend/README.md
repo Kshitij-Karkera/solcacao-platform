@@ -33,6 +33,7 @@ The site expects the API at `http://localhost:4000`. Start it first (see [`backe
 | `npm test` | Unit and component tests (Vitest) |
 | `npm run lint` | ESLint |
 | `npm run format` | Prettier (style rules in the repo's `.prettierrc`) |
+| `npm run locales:export` | Copy the site text to `backend/locales/*.json` for the API |
 
 Production server: `npm run build` then `node .output/server/index.mjs` (serves on `http://localhost:3000`).
 
@@ -56,6 +57,7 @@ The API only accepts requests from the origins in its `CORS_ORIGINS` setting (th
 | B2B quote wizard | `components/site/QuoteWizard.tsx` | `POST /api/b2b/quote` (multipart, field `brandFile`) |
 | Account quote history | `src/lib/auth.tsx`, `routes/account.tsx` | `GET /api/b2b/quotes` |
 | Contact form | `routes/contact.tsx`, `src/lib/inquiry.ts` | `POST /api/contact` |
+| English/Spanish site text | `src/lib/i18n.tsx` | `GET /api/i18n/:lang` |
 
 How the data behaves:
 - **Sign-in:** the API returns a JWT, stored in `localStorage` with the profile; the password is never stored. On reload the session is confirmed with `GET /api/auth/me`, and an expired token signs the user out.
@@ -105,12 +107,14 @@ frontend/
 | `/contact` | Contact form, WhatsApp links and contact details |
 | `/account` | Profile, role and B2B quote history |
 
-Use the **EN / ES** switch in the header to change the language. All user-facing text lives in `src/lib/i18n.tsx`; the Spanish dictionary is type-checked against the English one, so a missing translation fails the type check (`npx tsc --noEmit`).
+Use the **EN / ES** switch in the header to change the language. The site loads that language's text from the API (`GET /api/i18n/:lang`). The master copy of all text is `src/lib/i18n.tsx`: it is bundled so the first render and offline use always have text, and it keeps the functions for text that depends on a value (such as "3 in stock"). The Spanish dictionary is type-checked against the English one, so a missing translation fails the type check (`npx tsc --noEmit`).
+
+After changing any text in `i18n.tsx`, run `npm run locales:export` to update the API's copy in `backend/locales/`, and commit both. A test fails if they differ.
 
 ## 6. Tests
 
 ```bash
-npm test            # 29 tests in 4 files
+npm test            # 34 tests in 5 files
 npx tsc --noEmit    # type check
 npm run lint
 npm run build

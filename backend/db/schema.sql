@@ -78,9 +78,13 @@ CREATE TABLE dbo.Products (
     active BIT NOT NULL DEFAULT 1,                                 -- + 0 = hidden from the catalog
     created_at DATETIME NOT NULL DEFAULT GETDATE()                 -- +
 );
-CREATE INDEX idx_Products_origin ON dbo.Products(category_origin);
-CREATE INDEX idx_Products_cacao ON dbo.Products(cacao_percent);
-CREATE INDEX idx_Products_price ON dbo.Products(price);
+-- Indexes for the catalog filters (created only if missing, so migrate can be re-run)
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'idx_Products_origin' AND object_id = OBJECT_ID('dbo.Products'))
+    CREATE INDEX idx_Products_origin ON dbo.Products(category_origin);
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'idx_Products_cacao' AND object_id = OBJECT_ID('dbo.Products'))
+    CREATE INDEX idx_Products_cacao ON dbo.Products(cacao_percent);
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'idx_Products_price' AND object_id = OBJECT_ID('dbo.Products'))
+    CREATE INDEX idx_Products_price ON dbo.Products(price);
 GO
 
 IF OBJECT_ID('dbo.Inventory') IS NULL

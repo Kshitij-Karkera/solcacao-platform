@@ -17,6 +17,8 @@ const json = (status: number, data: unknown) =>
 
 export function mockApi() {
   const calls: Call[] = [];
+  /** Text the stand-in API serves at /api/i18n/:lang (tests set it with setI18n). */
+  const i18n: Record<string, unknown> = {};
   const users = new Map<string, Record<string, unknown> & { password: string }>();
   let cart: { key: string; qty: number; price: number }[] = [];
 
@@ -78,6 +80,11 @@ export function mockApi() {
         return json(200, { quotes: [] });
       case "POST /api/contact":
         return json(201, { id: 1, received: true });
+      case "GET /api/i18n/en":
+      case "GET /api/i18n/es": {
+        const lang = url.pathname.slice(-2);
+        return json(200, { lang, dict: i18n[lang] ?? {} });
+      }
       default:
         return json(404, { error: `Route ${method} ${url.pathname} not found` });
     }
@@ -86,5 +93,8 @@ export function mockApi() {
   /** Create an existing account; its token is "token-<email>". */
   const seedUser = (u: { name: string; email: string; type: "retail" | "b2b" }) =>
     users.set(u.email, { ...u, password: "secret123" });
-  return { calls, fetchMock, seedUser };
+  const setI18n = (lang: "en" | "es", dict: unknown) => {
+    i18n[lang] = dict;
+  };
+  return { calls, fetchMock, seedUser, setI18n };
 }
