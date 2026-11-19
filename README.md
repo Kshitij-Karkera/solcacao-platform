@@ -170,7 +170,7 @@ solcacao-platform/
 
 | Phase | Weeks | Focus |
 |---|---|---|
-| 1 | 1-2 | Architecture and setup: repository, database design, routing shell, localization structure, prototype |
-| 2 | 3-4 | Core development: components, client-side state, validation, accessibility |
-| 3 | 5-6 | Back end and integration: Express API, Azure SQL database, server-side logic, React connected with `fetch()` |
-| 4 | 7-8 | Audit, polish and launch: asset compression, query optimization, lazy loading, final deployment |
+| 1 | 1-5 | Architecture and setup: repository, database design, routing shell, localization structure, prototype |
+| 2 | 5-10 | Core development: components, client-side state, validation, accessibility |
+| 3 | 10-12 | Back end and integration: Express API, Azure SQL database, server-side logic, React connected with `fetch()` |
+| 4 | 12-13 | Audit, polish and launch: asset compression, query optimization, lazy loading, final deployment |
